@@ -332,7 +332,7 @@ system.time(bubblesort(v3))
 - il faut du temps pour qu'un grand élément remonte en haut du tableau
 - un exemple d'algorithme plus efficace: *quicksort*
 
-# Exercice avancé (à préparer pour ceux qui veulent)
+# Exercice avancé - pour ceux qui le souhaitent
 
 On a deux cercles dont on connaît les centres, et les diamètres
 
