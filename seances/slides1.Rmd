@@ -212,6 +212,14 @@ while(x[i] <= Stop)
 }
 ```
 
+# Boucles `while` - attention
+
+Une boucle `while` a une *condition de sortie* (`x[i] <= Stop` dans le cas précédent)
+
+C'est **votre travail** de vérifier que cette condition de sortie peut être atteinte
+
+Par exemple, le code `while(i < 3) print(i)` tourne indéfiniment
+
 # Sortir des boucles - `next`
 
 ```{r}
@@ -326,7 +334,7 @@ system.time(bubblesort(v3))
 
 # Exercice avancé (à préparer pour ceux qui veulent)
 
-On a deux cercles dont on connaît les centres, et le diamètres
+On a deux cercles dont on connaît les centres, et les diamètres
 
 On veut mesurer *approximativement* la surface de l'aire partagée par ces deux cercles -- écrivez cet algorithme
 
