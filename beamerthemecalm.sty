@@ -1,0 +1,50 @@
+\mode<presentation>
+
+%% General setup
+
+%% Fonts & typography
+
+\usepackage[T1]{fontenc}
+%\usepackage[slides,frenchmath,lf,loosequotes]{MinionPro}
+%\usefonttheme{serif}
+\usepackage[default]{lato}
+\usepackage{eulervm}
+\linespread{1.2}
+
+% Frame title
+\setbeamerfont{frametitle}{shape=\scshape,size=\normalsize}
+
+% Title page elements
+\setbeamerfont{title}{shape=\scshape,size=\Large}
+\setbeamerfont{subtitle}{shape=\scshape, size=\large}
+\setbeamerfont{institute}{shape=\scshape, size=\tiny}
+\setbeamerfont{author}{series=\bfseries,size=\small,shape=\normalfont}
+
+%% Layouts
+\beamertemplatenavigationsymbolsempty 
+
+% Enumeration and itemizes are out the left margin
+\setbeamertemplate{itemize/enumerate body begin}{\setlength{\leftmargini}{0pt}}
+
+% Frame title
+\setbeamertemplate{frametitle}{%
+   \vskip 0.4em%
+   \line(1,0){130}%
+   \vskip 0.1em%
+   \insertframetitle\hskip 1em \usebeamercolor[fg]{framesubtitle}\insertframesubtitle%
+}
+
+% Title frame
+\setbeamertemplate{title page}{%
+      \vskip 0.4em%
+      \usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\hskip 1em%
+      \usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate%
+      \vfill%
+      \vfill%
+      \usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle%
+      \vskip 0.6em
+      \usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle%
+      \vfill%
+      \vfill%
+      \usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor
+}
