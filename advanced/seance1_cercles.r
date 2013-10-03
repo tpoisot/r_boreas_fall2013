@@ -36,7 +36,7 @@ euclideanDistance = function(p1, p2)
    # Calculates the Euclidean distance between two objects
    # Objects are lists with attributes x and y
    # Returns the distance
-   d = 0
+   d = sqrt((p1$x-p2$x)^2+(p1$x-p2$y)^2)
    return(d)
 }
 
@@ -45,7 +45,7 @@ inCircle = function(point, circle) euclideanDistance(point, circle) < circle$d
 getProportionShared = function(c1, c2, npoints)
 {
    # Step 1 - find the rectangle
-   rectangle = getBorders(c(c1, c2))
+   rectangle = getBorders(list(c1, c2))
    # Step 2 - make the mesh
    mesh = makeMesh(npoints, rectangle$bottomleft, rectangle$topright)
    # Step 3 - for each point, check whether it is in one or two circles
@@ -55,10 +55,13 @@ getProportionShared = function(c1, c2, npoints)
    # Step 4 - measure the relative area
    totalIn = sum(in_which > 0)
    totalBoth = sum(in_which == 2)
+   # Finally - return
    return(totalBoth/totalIn)
 }
 
 c1 = list(x=0, y=0, d=2)
 c2 = list(x=2, y=0.3, d=1.8)
 
-print(getProportionShared(c1, c2, 100))
+Estimates = replicate(100, getProportionShared(c1, c2, 10000))
+
+plot(density(Estimates), lwd=2, col=rgb(84, 12, 69, maxColorValue=255))
