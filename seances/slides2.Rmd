@@ -1,0 +1,24 @@
+% Vectorisation et tests
+% Timothée Poisot
+%
+
+# Dans l'épisode précédent
+
+1. Comment écrire une fonction
+2. L'importance de bien penser à son algorithme
+
+# Solution de l'exercice
+
+On génére N points positionnés *au hasard* dans le rectangle ou les deux cercles sont inscrits
+
+On compte combien de points sont dans au moins un cercle (U) et combien sont dans les deux (D)
+
+L'aire relative de la surface ou les cercles se recouvrent est U/D
+
+Version R: `advanced/seance1_cercles.r`
+
+# Programme de la séance
+
+1. Les tests
+2. La vectorisation
+3. Dynamiques écologiques neutres
