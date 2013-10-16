@@ -2,12 +2,14 @@ Vectorisation et tests
 =======================
 author: Timothée Poisot
 
-# Dans l'épisode précédent
+Dans l'épisode précédent
+=======================
 
 1. Comment écrire une fonction
 2. L'importance de bien penser à son algorithme
 
-# Solution de l'exercice
+Solution de l'exercice
+=======================
 
 On génére N points positionnés *au hasard* dans le rectangle ou les deux cercles sont inscrits
 
@@ -17,13 +19,15 @@ L'aire relative de la surface ou les cercles se recouvrent est U/D
 
 Version R: `advanced/seance1_cercles.r`
 
-# Programme de la séance
+Programme de la séance
+=======================
 
 1. Les tests
 2. La vectorisation
 3. Dynamiques écologiques neutres
 
-# Les tests
+Les tests
+=======================
 
 Principe général: **si** une condition, **alors** une instruction (**sinon**, autre chose)
 
@@ -37,7 +41,8 @@ pour tous les nombres i entre et 10
       afficher i + 1
 ```
 
-# Les tests
+Les tests
+=======================
 
 ```{r}
 
@@ -54,7 +59,9 @@ for(i in c(1:10))
 }
 ```
 
-# Pour faire court en R
+
+Pour faire court en R
+=======================
 
 ```{r}
 a = 2
@@ -62,7 +69,8 @@ b = ifelse(a<3, 0, 1)
 b
 ```
 
-# Le type booléen
+Le type booléen
+=======================
 
 Prend deux valeurs: `vrai` et `faux`
 
@@ -77,7 +85,8 @@ a+3 > 3
 (a+1 > 3) + 1
 ```
 
-# Comparaisons: *et* logique
+Comparaisons: *et* logique
+=======================
 
 ```{r}
 TRUE & TRUE
@@ -85,7 +94,8 @@ TRUE & FALSE
 FALSE & FALSE
 ```
 
-# Comparaisons: *ou* logique
+Comparaisons: *ou* logique
+=======================
 
 ```{r}
 TRUE | TRUE
@@ -93,7 +103,8 @@ TRUE | FALSE
 FALSE | FALSE
 ```
 
-# Comparaisons: précédence
+Comparaisons: précédence
+=======================
 
 ```{r}
 TRUE | FALSE & TRUE
@@ -101,7 +112,8 @@ TRUE | ( FALSE & TRUE )
 (TRUE | FALSE) & TRUE
 ```
 
-# Comparaisons
+Comparaisons
+=======================
 
 ```{r}
 TRUE + TRUE
@@ -109,7 +121,8 @@ TRUE * FALSE
 TRUE + FALSE
 ```
 
-# Comparaisons: *ou exclusif*
+Comparaisons: *ou exclusif*
+=======================
 
 ```{r}
 xor(TRUE, FALSE)
@@ -117,7 +130,8 @@ xor(FALSE, FALSE)
 xor(TRUE, TRUE)
 ```
 
-# Comparaisons: *non*
+Comparaisons: *non*
+=======================
 
 ```{r}
 TRUE
@@ -125,11 +139,13 @@ TRUE
 !FALSE
 ```
 
-# Exercice - programmer le *ou exclusif*
+Exercice - programmer le *ou exclusif*
+=======================
 
 **Rappel**: (prédicat 1 *ou* prédicat 2) *mais pas* (prédicat 1 *et* prédicat 2)
 
-# Exercice - en R
+Exercice - en R
+=======================
 
 ```{r}
 ouExcl = function(pr1, pr2) (!(pr1 & pr2))&(pr1 | pr2)
@@ -139,7 +155,8 @@ xor(T, T)
 ouExcl(T, T)
 ```
 
-# Rappel - vecteur
+Rappel - vecteur
+=======================
 
 Dans R, un vecteur est un object avec plusieurs éléments, numérotés de `1` à `length(objet)`
 
@@ -151,13 +168,15 @@ print(a[1])
 print(a[3])
 ```
 
-# Rappel - matrices
+Rappel - matrices
+=======================
 
 Une matrice a deux dimensions, allant de `1` à `nrow(matrice)` et `ncol(matrice)`
 
 On accède à la ligne `i` par `matrice[i,]`, à la colonne `j` par `matrice[j]`, et à l'élément `i,j` par `matrice[i,j]`
 
-# Rappel - matrices
+Rappel - matrices
+=======================
 
 ```{r}
 b = matrix(c(1:4),nrow=2)
@@ -166,13 +185,15 @@ print(b[1,2])
 print(b[2,1])
 ```
 
-# La vectorisation
+La vectorisation
+=======================
 
 1. Permet d'accéder rapidement a des éléments de vecteurs
 2. Automatise le traitement des vecteurs
 3. **Central** pour écrire du code `R` efficace
 
-# La vectorisation - accès
+La vectorisation - accès
+=======================
 
 ```{r}
 ve = c(1,2,3,5,8,13)
@@ -182,7 +203,8 @@ ve <= 5
 ve[ve <= 5]
 ```
 
-# La vectorisation - opérations
+La vectorisation - opérations
+=======================
 
 ```{r}
 ve = c(1:3)
@@ -193,19 +215,22 @@ vpl2
 ve+2
 ```
 
-# La vectorisation - répétitions
+La vectorisation - répétitions
+=======================
 
 ```{r}
 replicate(4, 10)
 ```
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 (*en résumé*) une mouvement dans lequel on se déplace aléatoirement à partir de son état actuale (*random walk*)
 
 $$x_{t+1} = x_{t} + \mathcal{N}(0, \sigma)$$
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 ```{r}
 brownian = function(x0=0, steps=10)
@@ -221,7 +246,8 @@ brownian = function(x0=0, steps=10)
 brownian(steps=4)
 ```
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 ```{r}
 for(i in c(1:5))
@@ -230,13 +256,15 @@ for(i in c(1:5))
 }
 ```
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 ```{r}
 replicate(5, brownian(steps=3))
 ```
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 ```{r}
 walk = replicate(300, brownian(steps=50))
@@ -246,13 +274,15 @@ var_time = apply(walk, 1, var)
 print(head(var_time))
 ```
 
-# Mouvement brownien
+Mouvement brownien
+=======================
 
 ```{r, echo=FALSE}
 plot(var_time, type='l', col='darkblue', lwd=2)
 ```
 
-# `apply`
+`apply`
+=======================
 
 ```{}
 apply(matrice, DIM, FUN)
@@ -261,7 +291,8 @@ apply(matrice, DIM, FUN)
 - `DIM`: `1` pour les lignes, `2` pour les colonnes
 - `FUN`: toute fonction prennant un vecteur comme argument
 
-# `apply` - définition en-ligne
+`apply` - définition en-ligne
+=======================
 
 ```{r}
 coef_var = apply(walk, 1, function(x) mean(abs(x)))
