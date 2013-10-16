@@ -5,7 +5,7 @@ generateIsland = function(K, pool) sample(pool, K, replace=TRUE)
 timeStep = function(island, pool, m, n)
 {
    K = length(island)
-   island = island[rbinom(K, 1, m) == FALSE]
+   island = island[!rbinom(K, 1, m)]
    new_ind = K-length(island)
    new_sp = replicate(new_ind, ifelse(runif(1) < n, sample(island, 1), sample(pool, 1)))
    return(as.numeric(c(island, new_sp)))
