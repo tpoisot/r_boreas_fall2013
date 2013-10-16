@@ -1,4 +1,4 @@
-%  Vectorisation et tests
+% Vectorisation et tests
 % Timothée Poisot
 %
 
@@ -101,6 +101,14 @@ TRUE | ( FALSE & TRUE )
 (TRUE | FALSE) & TRUE
 ```
 
+# Comparaisons
+
+```{r}
+TRUE + TRUE
+TRUE * FALSE
+TRUE + FALSE
+```
+
 # Comparaisons: *ou exclusif*
 
 ```{r}
@@ -137,23 +145,44 @@ Dans R, un vecteur est un object avec plusieurs éléments, numérotés de `1` �
 
 On accède à l'élément à la position `i` avec `objet[i]`
 
+```{r}
+a = seq(from=0, to=3, length=9)
+print(a[1])
+print(a[3])
+```
+
 # Rappel - matrices
 
 Une matrice a deux dimensions, allant de `1` à `nrow(matrice)` et `ncol(matrice)`
 
 On accède à la ligne `i` par `matrice[i,]`, à la colonne `j` par `matrice[j]`, et à l'élément `i,j` par `matrice[i,j]`
 
-# La vectorisation
+# Rappel - matrices
 
 ```{r}
-ve = c(1,2,3,4,5)
-ve[1]
-ve[c(1,3,4)]
-ve <= 2
-ve[ve <= 2]
+b = matrix(c(1:4),nrow=2)
+print(b)
+print(b[1,2])
+print(b[2,1])
 ```
 
 # La vectorisation
+
+1. Permet d'accéder rapidement a des éléments de vecteurs
+2. Automatise le traitement des vecteurs
+3. **Central** pour écrire du code `R` efficace
+
+# La vectorisation - accès
+
+```{r}
+ve = c(1,2,3,5,8,13)
+ve[1]
+ve[c(1,3,4)]
+ve <= 5
+ve[ve <= 5]
+```
+
+# La vectorisation - opérations
 
 ```{r}
 ve = c(1:3)
@@ -162,4 +191,79 @@ for(i in c(1:length(ve))) vpl2[i] = ve[i]+2
 vpl2
 
 ve+2
+```
+
+# La vectorisation - répétitions
+
+```{r}
+replicate(4, 10)
+```
+
+# Mouvement brownien
+
+(*en résumé*) une mouvement dans lequel on se déplace aléatoirement à partir de son état actuale (*random walk*)
+
+$$x_{t+1} = x_{t} + \mathcal{N}(0, \sigma)$$
+
+# Mouvement brownien
+
+```{r}
+brownian = function(x0=0, steps=10)
+{
+   x = c(x0)
+   for(i in c(2:steps))
+   {
+      x[i] = x[(i-1)] + rnorm(1, 0, 0.05)
+   }
+   return(x)
+}
+
+brownian(steps=4)
+```
+
+# Mouvement brownien
+
+```{r}
+for(i in c(1:5))
+{
+   print(brownian(steps=3))
+}
+```
+
+# Mouvement brownien
+
+```{r}
+replicate(5, brownian(steps=3))
+```
+
+# Mouvement brownien
+
+```{r}
+walk = replicate(300, brownian(steps=50))
+
+var_time = apply(walk, 1, var)
+
+print(head(var_time))
+```
+
+# Mouvement brownien
+
+```{r, echo=FALSE}
+plot(var_time, type='l', col='darkblue', lwd=2)
+```
+
+# `apply`
+
+```{}
+apply(matrice, DIM, FUN)
+```
+
+- `DIM`: `1` pour les lignes, `2` pour les colonnes
+- `FUN`: toute fonction prennant un vecteur comme argument
+
+# `apply` - définition en-ligne
+
+```{r}
+coef_var = apply(walk, 1, function(x) mean(abs(x)))
+plot(coef_var, type='l', lwd=2, col='darkgreen')
 ```
