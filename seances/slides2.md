@@ -517,7 +517,7 @@ brownian(steps=4)
 ```
 
 ```
-[1]  0.000000  0.015248  0.004407 -0.075201
+[1]  0.000000 -0.008111  0.010608 -0.007255
 ```
 
 
@@ -533,11 +533,11 @@ for(i in c(1:5))
 ```
 
 ```
-[1] 0.00000 0.02607 0.03671
-[1]  0.00000 -0.03004 -0.04216
-[1]  0.00000 -0.06798 -0.13157
-[1]  0.00000 -0.05472 -0.06277
-[1] 0.00000 0.07012 0.05907
+[1] 0.00000 0.03095 0.04652
+[1]  0.000000 -0.015567  0.006057
+[1] 0.000000 0.004555 0.062313
+[1] 0.000000 0.002926 0.043918
+[1] 0.00000 0.02746 0.09229
 ```
 
 
@@ -550,10 +550,10 @@ replicate(5, brownian(steps=3))
 ```
 
 ```
-        [,1]      [,2]     [,3]     [,4]    [,5]
-[1,] 0.00000  0.000000  0.00000  0.00000 0.00000
-[2,] 0.02183 -0.006138 -0.07229 -0.03173 0.14611
-[3,] 0.09703 -0.008637 -0.07350 -0.07091 0.05688
+          [,1]      [,2]      [,3]     [,4]      [,5]
+[1,]  0.000000  0.000000  0.000000  0.00000  0.000000
+[2,] -0.035466 -0.009045 -0.007019 -0.03014 -0.050364
+[3,] -0.006589 -0.047416  0.003134 -0.09909 -0.005664
 ```
 
 
@@ -570,7 +570,7 @@ print(head(var_time))
 ```
 
 ```
-[1] 0.000000 0.002607 0.004974 0.007400 0.010330 0.011560
+[1] 0.000000 0.002685 0.004647 0.006779 0.008967 0.011421
 ```
 
 
@@ -601,3 +601,13 @@ plot(coef_var, type='l', lwd=2, col='darkgreen')
 
 ![plot of chunk unnamed-chunk-21](slides2-figure/unnamed-chunk-21.png) 
 
+
+Exercice - dynamiques écologiques neutres
+=======================
+
+1. On dispose d'un *pool* régional de `J` espèces, identifiées par leur index (de `1` à `J`).
+2. Sur une île, on a `K` individus pris au hasard parmis les `J` espèces.
+3. À chaque pas de temps, chaque individu a une probabilité `m` de mourir.
+4. La recolonisation est immédiate, soit par natalité (probabilité `n`), soit par immigration
+5. Toutes les espèces ont la même chance d'immigrer
+6. Tous les individus ont la même chance de se reproduire

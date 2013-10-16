@@ -298,3 +298,13 @@ apply(matrice, DIM, FUN)
 coef_var = apply(walk, 1, function(x) mean(abs(x)))
 plot(coef_var, type='l', lwd=2, col='darkgreen')
 ```
+
+Exercice - dynamiques écologiques neutres
+=======================
+
+1. On dispose d'un *pool* régional de `J` espèces, identifiées par leur index (de `1` à `J`).
+2. Sur une île, on a `K` individus pris au hasard parmis les `J` espèces.
+3. À chaque pas de temps, chaque individu a une probabilité `m` de mourir.
+4. La recolonisation est immédiate, soit par natalité (probabilité `n`), soit par immigration
+5. Toutes les espèces ont la même chance d'immigrer
+6. Tous les individus ont la même chance de se reproduire
