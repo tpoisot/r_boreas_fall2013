@@ -1,6 +1,6 @@
-% Vectorisation et tests
-% Timothée Poisot
-%
+Vectorisation et tests
+=======================
+author: Timothée Poisot
 
 # Dans l'épisode précédent
 
