@@ -16,9 +16,8 @@ richness = function(island) length(unique(island))
 simulation = function(K, J, m, n, steps)
 {
   Po = generatePool(J)
-  Is = generateIsland(K, Po)
   Sp = matrix(0, ncol=K, nrow=steps)
-  Sp[1, ] = Is
+  Sp[1, ] = generateIsland(K, Po)
   for(i in c(2:steps)) Sp[i,] = timeStep(Sp[(i-1),], Po, m, n)
   return(Sp)
 }
