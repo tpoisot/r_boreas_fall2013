@@ -1,0 +1,42 @@
+Stratégies pour l'analyse de données
+=======
+author: Timothée Poisot
+
+Dans la dernière séance
+=======
+
+- Ne pas utiliser de boucles `for`
+- Utiliser les raccourcis le plus possible
+
+Objectifs de la séance
+=======
+
+1. Concevoir une stratégie d'analyse de données
+2. `split`-`apply`-`combine`
+3. Les graphiques avec `ggplot2`
+
+Un exemple
+=======
+
+- 147 individus de différentes espèces de parasites, sur différents hôtes
+- une dizaine de mesures morphométriques
+- certaines données sont manquantes
+
+Pour récupérer les données: `http://dx.doi.org/10.6084/m9.figshare.97320`
+
+La question
+=======
+
+> La morphologie des différentes espèces est-elle la même? La morphologie d'une même espèce sur ses différents hôtes?
+
+Pour la réponse: Timothée Poisot, Yves Desdevises (2010) Putative speciation
+events in Lamellodiscus (Monogenea: Diplectanidae) assessed by a morphometric
+approach. *Biological Journal of the Linnean Society* 99 (3) 559-569.
+
+Lecture des données
+=======
+
+```{r}
+lam = read.table('http://files.figshare.com/143154/lamellodiscus.txt')
+print(head(lam))
+```
