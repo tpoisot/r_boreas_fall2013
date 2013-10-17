@@ -37,6 +37,29 @@ Lecture des données
 =======
 
 ```{r}
-lam = read.table('http://files.figshare.com/143154/lamellodiscus.txt')
-print(head(lam))
+library(RCurl)
+lam = read.table('http://files.figshare.com/143154/lamellodiscus.txt',sep='\t',h=TRUE,dec='.')
+print(colnames(lam))
+```
+
+Taille d'échantillon
+======
+
+```{r}
+print(xtabs(~sppar+sphote,lam))
+```
+
+Valeur moyenne de a
+======
+
+```{r}
+agr = aggregate(lam$a,by=list(host=lam$sphote, parasite=lam$sppar), mean, na.rm=TRUE)
+print(head(agr))
+```
+
+Valeur moyenne de a
+======
+
+```{r}
+print(xtabs(round(x,1)~host+parasite,agr))
 ```
