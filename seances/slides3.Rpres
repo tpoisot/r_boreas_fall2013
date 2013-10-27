@@ -13,6 +13,7 @@ Objectifs de la séance
 
 1. Concevoir une stratégie d'analyse de données
 2. `split`-`apply`-`combine`
+3. Le package `plyr`:w
 3. Les graphiques avec `ggplot2`
 
 Un exemple
@@ -34,7 +35,7 @@ events in Lamellodiscus (Monogenea: Diplectanidae) assessed by a morphometric
 approach. *Biological Journal of the Linnean Society* 99 (3) 559-569.
 
 Lecture des données
-=======
+======
 
 ```{r}
 library(RCurl)
@@ -63,3 +64,103 @@ Valeur moyenne de a
 ```{r}
 print(xtabs(round(x,1)~host+parasite,agr))
 ```
+
+Stratégie d'analyse
+=====
+
+1. `split`: diviser les données en ensembles (*pieces*) sur lesquels on travaille
+2. `apply`: appliquer la fonction de traitement à chaque *piece*
+3. `combine`: "re-coller" les objets dans un objet final
+
+Fonction de traitement
+=====
+
+1. Prend une *piece* comme argument
+2. Applique la mesure, statistique, *etc*.
+3. Renvoie un objet (idéalement) de la même nature que la *piece*
+
+**Important:** La fonction de traitement doit *toujours* renvoyer un objet du même type (rappel séance 1: prédictibilité)
+
+plyr
+======
+
+```{r}
+library(plyr)
+lam = lam[,-which(colnames(lam)=="para")]
+ddply(lam, c("sphote","sppar"),.fun=function(x) mean(x$a, na.rm=TRUE))
+```
+
+plyr
+======
+
+Nommage des fonctions de `plyr`: `**ply()`
+
+- `d`: `data.frame`
+- `a`: `array` (vecteur)
+- `l`: `list`
+- `_`: *discard* (only for the second letter)
+
+**Exemple:** `dlply` prend un `data.frame` en entrée, renvoie une `list`
+
+Une note importante
+======
+
+Les `data.frame` sont des `list` d'`array`. On peut donc les utiliser dans `l*ply()`.
+
+Les `data.frame` sont des `array` a deux dimensions. On peut donc les utiliser dans `a*ply()`.
+
+Procédure
+======
+
+1. Définir le type entrée/sortie
+2. Définir la fonction de traitement
+3. Appeller la fonction `**ply` qui correspond
+
+Exemple
+=====
+
+On a des données spatiales hétérogènes
+
+```{r}
+n = 100
+x = round(runif(4),1)
+y = round(runif(4),1)
+pop = data.frame(
+   X = sample(x, n, replace=T),
+   Y = sample(y, n, replace=T),
+   N = rlnorm(n, 2.0)
+)
+```
+
+On veut standardiser (`scale`) les données *par site*.
+
+Approche R "classique"
+======
+
+```{r}
+head(aggregate(pop$N, list(X=pop$X, Y=pop$Y), scale))
+```
+
+Approche plyr - scale
+======
+
+```{r}
+head(ddply(pop, .(X, Y), function(df) scale(df$N)))
+```
+
+Approche plyr - nombre d'échantillons
+======
+
+```{r}
+out = ddply(pop, .(X, Y), function(df) length(df$N))
+head(out)
+```
+
+Visualisation
+======
+
+```{r}
+library(ggplot2)
+ggplot(out, aes(x=X, y=Y, fill=V1)) + geom_tile()
+```
+
