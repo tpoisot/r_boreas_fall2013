@@ -156,11 +156,12 @@ out = ddply(pop, .(X, Y), function(df) length(df$N))
 head(out)
 ```
 
-Visualisation
+Retour aux données
 ======
 
 ```{r}
-library(ggplot2)
-ggplot(out, aes(x=X, y=Y, fill=V1)) + geom_tile()
+a_by_h_p = ddply(lam, .(sppar, sphote), function(x) return(data.frame(a=mean(x$a))))
+head(a_by_h_p)
 ```
+
 
