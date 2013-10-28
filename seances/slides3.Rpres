@@ -28,7 +28,8 @@ Pour récupérer les données: `http://dx.doi.org/10.6084/m9.figshare.97320`
 La question
 ======
 
-> La morphologie des différentes espèces est-elle la même? La morphologie d'une même espèce sur ses différents hôtes?
+1. La morphologie des différentes espèces est-elle la même?
+2. La morphologie d'une même espèce sur ses différents hôtes?
 
 Pour la réponse: Timothée Poisot, Yves Desdevises (2010) Putative speciation
 events in *Lamellodiscus* (Monogenea: Diplectanidae) assessed by a morphometric
@@ -47,7 +48,7 @@ Préparer les données
 =====
 
 ```{r}
-library(reshape)
+library(reshape2)
 lam = melt(lam, na.rm=TRUE)
 head(lam)
 ```
@@ -56,7 +57,7 @@ Calculer les moyennes
 =====
 
 ```{r}
-means = cast(lam, sphote~sppar~variable, mean, na.rm=TRUE)
+means = dcast(lam, sphote~sppar~variable, mean, na.rm=TRUE)
 means
 ```
 
@@ -71,7 +72,7 @@ Taille d'échantillon
 =====
 
 ```{r}
-cast(lam, sppar ~ sphote, length, subset=variable=='a')
+dcast(lam, sppar ~ sphote, length, subset=variable=='a')
 ```
 
 Stratégie d'analyse
@@ -171,4 +172,32 @@ Retour aux données
 head(ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), n = length(value), min = min(value), max = max(value), median = median(value)))
 ```
 
+Synthèse
+=====
+
+1. Lire les données
+2. Les mettre en forme avec `reshape2`
+3. Les traiter avec `plyr`
+4. Éventuellement, les formatter avec `reshape2`
+
+Visualisation
+=====
+
+La librairie `ggplot2` permet de visualiser facilement des `data.frame` (au format retourné par `melt`)
+
+```{r}
+library(ggplot2)
+```
+
+Principe de ggplot2
+=====
+
+*Grammaire graphique*
+
+1. Données
+2. Esthétiques
+3. Visualisation
+
+Exemple
+=====
 
