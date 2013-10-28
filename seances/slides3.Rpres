@@ -13,8 +13,8 @@ Objectifs de la séance
 
 1. Concevoir une stratégie d'analyse de données
 2. `split`-`apply`-`combine`
-3. Le package `plyr`:w
-3. Les graphiques avec `ggplot2`
+3. Les *packages* `plyr` et `reshape`
+4. Les graphiques avec `ggplot2`
 
 Un exemple
 =======
@@ -26,12 +26,12 @@ Un exemple
 Pour récupérer les données: `http://dx.doi.org/10.6084/m9.figshare.97320`
 
 La question
-=======
+======
 
 > La morphologie des différentes espèces est-elle la même? La morphologie d'une même espèce sur ses différents hôtes?
 
 Pour la réponse: Timothée Poisot, Yves Desdevises (2010) Putative speciation
-events in Lamellodiscus (Monogenea: Diplectanidae) assessed by a morphometric
+events in *Lamellodiscus* (Monogenea: Diplectanidae) assessed by a morphometric
 approach. *Biological Journal of the Linnean Society* 99 (3) 559-569.
 
 Lecture des données
@@ -40,29 +40,38 @@ Lecture des données
 ```{r}
 library(RCurl)
 lam = read.table('http://files.figshare.com/143154/lamellodiscus.txt',sep='\t',h=TRUE,dec='.')
-print(colnames(lam))
+head(lam)
+```
+
+Préparer les données
+=====
+
+```{r}
+library(reshape)
+lam = melt(lam, na.rm=TRUE)
+head(lam)
+```
+
+Calculer les moyennes
+=====
+
+```{r}
+means = cast(lam, sphote~sppar~variable, mean, na.rm=TRUE)
+means
+```
+
+Reformater les moyennes
+=====
+
+```{r}
+head(melt(means, na.rm=TRUE))
 ```
 
 Taille d'échantillon
-======
+=====
 
 ```{r}
-print(xtabs(~sppar+sphote,lam))
-```
-
-Valeur moyenne de a
-======
-
-```{r}
-agr = aggregate(lam$a,by=list(host=lam$sphote, parasite=lam$sppar), mean, na.rm=TRUE)
-print(head(agr))
-```
-
-Valeur moyenne de a
-======
-
-```{r}
-print(xtabs(round(x,1)~host+parasite,agr))
+cast(lam, sppar ~ sphote, length, subset=variable=='a')
 ```
 
 Stratégie d'analyse
@@ -86,8 +95,7 @@ plyr
 
 ```{r}
 library(plyr)
-lam = lam[,-which(colnames(lam)=="para")]
-ddply(lam, c("sphote","sppar"),.fun=function(x) mean(x$a, na.rm=TRUE))
+head(ddply(lam, sphote~sppar~variable, function(x) mean(x$value)))
 ```
 
 plyr
@@ -160,8 +168,7 @@ Retour aux données
 ======
 
 ```{r}
-a_by_h_p = ddply(lam, .(sppar, sphote), function(x) return(data.frame(a=mean(x$a))))
-head(a_by_h_p)
+head(ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), n = length(value), min = min(value), max = max(value), median = median(value)))
 ```
 
 

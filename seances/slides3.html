@@ -195,7 +195,7 @@ hljs.initHighlightingOnLoad();
 <ol>
 <li>Concevoir une stratégie d&#39;analyse de données</li>
 <li><code>split</code>-<code>apply</code>-<code>combine</code></li>
-<li>Le package <code>plyr</code>:w</li>
+<li>Les <em>packages</em> <code>plyr</code> et <code>reshape</code></li>
 <li>Les graphiques avec <code>ggplot2</code></li>
 </ol>
 
@@ -216,7 +216,7 @@ hljs.initHighlightingOnLoad();
 </blockquote>
 
 <p>Pour la réponse: Timothée Poisot, Yves Desdevises (2010) Putative speciation
-events in Lamellodiscus (Monogenea: Diplectanidae) assessed by a morphometric
+events in <em>Lamellodiscus</em> (Monogenea: Diplectanidae) assessed by a morphometric
 approach. <em>Biological Journal of the Linnean Society</em> 99 (3) 559-569.</p>
 
 <h1>Lecture des données</h1>
@@ -229,65 +229,328 @@ approach. <em>Biological Journal of the Linnean Society</em> 99 (3) 559-569.</p>
 
 <pre><code class="r">lam = read.table(&quot;http://files.figshare.com/143154/lamellodiscus.txt&quot;, sep = &quot;\t&quot;, 
     h = TRUE, dec = &quot;.&quot;)
-print(colnames(lam))
+head(lam)
 </code></pre>
 
-<pre><code>##  [1] &quot;sphote&quot; &quot;sppar&quot;  &quot;para&quot;   &quot;a&quot;      &quot;b&quot;      &quot;c&quot;      &quot;d&quot;     
-##  [8] &quot;f&quot;      &quot;g&quot;      &quot;aa&quot;     &quot;bb&quot;     &quot;cc&quot;     &quot;lm&quot;     &quot;li&quot;
+<pre><code>##   sphote sppar      para    a    b    c    d    f    g   aa   bb   cc   lm
+## 1   Divu  eleg elegDivu1 2.06 1.93   NA   NA   NA   NA 1.93 1.81 1.16 5.43
+## 2   Divu  eleg elegDivu2 1.93 1.82 1.51 0.41 0.57 0.20 1.77 1.67 1.20 2.35
+## 3   Divu  eleg elegDivu2 1.67 1.56 1.20 0.31 0.36 0.26 1.56 1.51 0.94 1.88
+## 4   Disa  eleg elegDisa1 1.46 1.41 1.04 0.47 0.67 0.31 1.25 1.20 0.83 1.46
+## 5   Disa  eleg elegDisa1 1.30 1.25 0.94 0.36 0.52 0.31 1.14 1.09 0.78   NA
+## 6   Disa  eleg elegDisa1 1.41 1.35 0.99 0.36 0.57 0.36 1.25 1.20 0.83 2.08
+##     li
+## 1 2.66
+## 2 2.66
+## 3 1.77
+## 4 2.19
+## 5 2.03
+## 6 2.55
+</code></pre>
+
+<h1>Préparer les données</h1>
+
+<pre><code class="r">library(reshape)
+</code></pre>
+
+<pre><code>## Loading required package: plyr
+## 
+## Attaching package: &#39;reshape&#39;
+## 
+## Les objets suivants sont masqués from &#39;package:plyr&#39;:
+## 
+##     rename, round_any
+</code></pre>
+
+<pre><code class="r">lam = melt(lam, na.rm = TRUE)
+</code></pre>
+
+<pre><code>## Using sphote, sppar, para as id variables
+</code></pre>
+
+<pre><code class="r">head(lam)
+</code></pre>
+
+<pre><code>##   sphote sppar      para variable value
+## 1   Divu  eleg elegDivu1        a  2.06
+## 2   Divu  eleg elegDivu2        a  1.93
+## 3   Divu  eleg elegDivu2        a  1.67
+## 4   Disa  eleg elegDisa1        a  1.46
+## 5   Disa  eleg elegDisa1        a  1.30
+## 6   Disa  eleg elegDisa1        a  1.41
+</code></pre>
+
+<h1>Calculer les moyennes</h1>
+
+<pre><code class="r">means = cast(lam, sphote ~ sppar ~ variable, mean, na.rm = TRUE)
+means
+</code></pre>
+
+<pre><code>## , , variable = a
+## 
+##       sppar
+## sphote  conf dipl  eleg  erge  falc  frat  furc  igno  kech morm   neif
+##   Dian   NaN  NaN 1.650   NaN   NaN 1.633   NaN   NaN   NaN  NaN    NaN
+##   Dipu   NaN  NaN   NaN 2.386   NaN   NaN   NaN 1.278   NaN  NaN    NaN
+##   Disa 1.204  NaN 1.740 1.931 1.443   NaN 1.968 1.160 1.789  1.6 0.8625
+##   Divu   NaN  1.1 1.760 2.170 1.407   NaN   NaN 1.229 1.811  NaN 1.8146
+##   Limo   NaN  NaN   NaN   NaN   NaN   NaN   NaN 1.020   NaN  NaN    NaN
+##   Obme   NaN  NaN 1.392   NaN   NaN   NaN   NaN   NaN   NaN  NaN    NaN
+##   Sasa 1.300  NaN   NaN   NaN   NaN   NaN   NaN 1.125   NaN  NaN    NaN
+##       sppar
+## sphote  ther  tome
+##   Dian   NaN   NaN
+##   Dipu 2.365   NaN
+##   Disa   NaN   NaN
+##   Divu   NaN 2.283
+##   Limo   NaN   NaN
+##   Obme   NaN   NaN
+##   Sasa   NaN   NaN
+## 
+## , , variable = b
+## 
+##       sppar
+## sphote  conf  dipl  eleg  erge  falc  frat  furc  igno  kech morm  neif
+##   Dian   NaN   NaN 1.450   NaN   NaN 1.467   NaN   NaN   NaN  NaN   NaN
+##   Dipu   NaN   NaN   NaN 2.314   NaN   NaN   NaN 1.274   NaN  NaN   NaN
+##   Disa 1.244   NaN 1.662 1.828 0.994   NaN 1.857 1.117 1.833 1.55 0.750
+##   Divu   NaN 1.025 1.637 2.045 1.370   NaN   NaN 1.156 1.708  NaN 1.718
+##   Limo   NaN   NaN   NaN   NaN   NaN   NaN   NaN 0.910   NaN  NaN   NaN
+##   Obme   NaN   NaN 1.292   NaN   NaN   NaN   NaN   NaN   NaN  NaN   NaN
+##   Sasa 1.250   NaN   NaN   NaN   NaN   NaN   NaN 1.012   NaN  NaN   NaN
+##       sppar
+## sphote  ther  tome
+##   Dian   NaN   NaN
+##   Dipu 2.218   NaN
+##   Disa   NaN   NaN
+##   Divu   NaN 2.183
+##   Limo   NaN   NaN
+##   Obme   NaN   NaN
+##   Sasa   NaN   NaN
+## 
+## , , variable = c
+## 
+##       sppar
+## sphote   conf  dipl   eleg  erge   falc  frat  furc   igno  kech morm
+##   Dian    NaN   NaN 0.9750   NaN    NaN 1.033   NaN    NaN   NaN  NaN
+##   Dipu    NaN   NaN    NaN 1.667    NaN   NaN   NaN 0.8402   NaN  NaN
+##   Disa 0.7498   NaN 1.1857 1.278 0.5997   NaN 1.352 0.7640 1.205 1.25
+##   Divu    NaN 0.525 1.2436 1.175 0.7040   NaN   NaN 0.7486 1.092  NaN
+##   Limo    NaN   NaN    NaN   NaN    NaN   NaN   NaN 0.5050   NaN  NaN
+##   Obme    NaN   NaN 0.8667   NaN    NaN   NaN   NaN    NaN   NaN  NaN
+##   Sasa 0.5500   NaN    NaN   NaN    NaN   NaN   NaN 0.6625   NaN  NaN
+##       sppar
+## sphote  neif  ther  tome
+##   Dian   NaN   NaN   NaN
+##   Dipu   NaN 1.588   NaN
+##   Disa 0.450   NaN   NaN
+##   Divu 1.289   NaN 1.283
+##   Limo   NaN   NaN   NaN
+##   Obme   NaN   NaN   NaN
+##   Sasa   NaN   NaN   NaN
+## 
+## , , variable = d
+## 
+##       sppar
+## sphote   conf dipl   eleg   erge  falc   frat   furc   igno   kech morm
+##   Dian    NaN  NaN 0.6000    NaN   NaN 0.4833    NaN    NaN    NaN  NaN
+##   Dipu    NaN  NaN    NaN 0.8382   NaN    NaN    NaN 0.6224    NaN  NaN
+##   Disa 0.7443  NaN 0.5340 0.6802 0.485    NaN 0.6287 0.4677 0.6117  0.7
+##   Divu    NaN 0.45 0.5113 0.9250 0.508    NaN    NaN 0.4943 0.5706  NaN
+##   Limo    NaN  NaN    NaN    NaN   NaN    NaN    NaN 0.4350    NaN  NaN
+##   Obme    NaN  NaN 0.4250    NaN   NaN    NaN    NaN    NaN    NaN  NaN
+##   Sasa 0.3000  NaN    NaN    NaN   NaN    NaN    NaN 0.4000    NaN  NaN
+##       sppar
+## sphote   neif   ther tome
+##   Dian    NaN    NaN  NaN
+##   Dipu    NaN 0.8393  NaN
+##   Disa 0.3250    NaN  NaN
+##   Divu 0.7173    NaN  0.8
+##   Limo    NaN    NaN  NaN
+##   Obme    NaN    NaN  NaN
+##   Sasa    NaN    NaN  NaN
+## 
+## , , variable = f
+## 
+##       sppar
+## sphote   conf  dipl   eleg   erge   falc   frat   furc   igno   kech morm
+##   Dian    NaN   NaN 0.6500    NaN    NaN 0.6083    NaN    NaN    NaN  NaN
+##   Dipu    NaN   NaN    NaN 1.1478    NaN    NaN    NaN 0.6856    NaN  NaN
+##   Disa 0.6972   NaN 0.6263 0.9088 0.4599    NaN 0.7512 0.5664 1.0317  0.8
+##   Divu    NaN 0.475 0.5687 0.9000 0.4483    NaN    NaN 0.5443 0.8145  NaN
+##   Limo    NaN   NaN    NaN    NaN    NaN    NaN    NaN 0.4600    NaN  NaN
+##   Obme    NaN   NaN 0.4667    NaN    NaN    NaN    NaN    NaN    NaN  NaN
+##   Sasa 0.3500   NaN    NaN    NaN    NaN    NaN    NaN 0.4125    NaN  NaN
+##       sppar
+## sphote  neif  ther tome
+##   Dian   NaN   NaN  NaN
+##   Dipu   NaN 1.087  NaN
+##   Disa 0.350   NaN  NaN
+##   Divu 0.797   NaN 1.15
+##   Limo   NaN   NaN  NaN
+##   Obme   NaN   NaN  NaN
+##   Sasa   NaN   NaN  NaN
+## 
+## , , variable = g
+## 
+##       sppar
+## sphote   conf  dipl   eleg   erge   falc   frat   furc   igno   kech morm
+##   Dian    NaN   NaN 0.3000    NaN    NaN 0.2917    NaN    NaN    NaN  NaN
+##   Dipu    NaN   NaN    NaN 0.5814    NaN    NaN    NaN 0.3492    NaN  NaN
+##   Disa 0.3702   NaN 0.3587 0.4777 0.2461    NaN 0.4145 0.2548 0.4483 0.65
+##   Divu    NaN 0.225 0.3307 0.6650 0.2740    NaN    NaN 0.3086 0.3847  NaN
+##   Limo    NaN   NaN    NaN    NaN    NaN    NaN    NaN 0.2400    NaN  NaN
+##   Obme    NaN   NaN 0.3417    NaN    NaN    NaN    NaN    NaN    NaN  NaN
+##   Sasa 0.2000   NaN    NaN    NaN    NaN    NaN    NaN 0.2125    NaN  NaN
+##       sppar
+## sphote   neif   ther   tome
+##   Dian    NaN    NaN    NaN
+##   Dipu    NaN 0.5883    NaN
+##   Disa 0.2000    NaN    NaN
+##   Divu 0.4476    NaN 0.3833
+##   Limo    NaN    NaN    NaN
+##   Obme    NaN    NaN    NaN
+##   Sasa    NaN    NaN    NaN
+## 
+## , , variable = aa
+## 
+##       sppar
+## sphote   conf dipl  eleg  erge   falc  frat  furc  igno  kech morm  neif
+##   Dian    NaN  NaN 1.575   NaN    NaN 1.333   NaN   NaN   NaN  NaN   NaN
+##   Dipu    NaN  NaN   NaN 1.990    NaN   NaN   NaN 1.182   NaN  NaN   NaN
+##   Disa 0.9759  NaN 1.529 1.652 0.9029   NaN 1.769 1.011 1.469  1.4 0.750
+##   Divu    NaN  1.2 1.638 1.780 1.2829   NaN   NaN 1.014 1.572  NaN 1.389
+##   Limo    NaN  NaN   NaN   NaN    NaN   NaN   NaN 0.915   NaN  NaN   NaN
+##   Obme    NaN  NaN 1.183   NaN    NaN   NaN   NaN   NaN   NaN  NaN   NaN
+##   Sasa 1.2000  NaN   NaN   NaN    NaN   NaN   NaN 1.062   NaN  NaN   NaN
+##       sppar
+## sphote ther  tome
+##   Dian  NaN   NaN
+##   Dipu    2   NaN
+##   Disa  NaN   NaN
+##   Divu  NaN 1.817
+##   Limo  NaN   NaN
+##   Obme  NaN   NaN
+##   Sasa  NaN   NaN
+## 
+## , , variable = bb
+## 
+##       sppar
+## sphote   conf  dipl  eleg  erge   falc  frat furc   igno  kech morm   neif
+##   Dian    NaN   NaN 1.400   NaN    NaN 1.158  NaN    NaN   NaN  NaN    NaN
+##   Dipu    NaN   NaN   NaN 1.899    NaN   NaN  NaN 1.1463   NaN  NaN    NaN
+##   Disa 0.9007   NaN 1.476 1.581 0.8876   NaN 1.67 0.9432 1.518  1.3 0.6625
+##   Divu    NaN 1.075 1.503 1.835 1.2167   NaN  NaN 0.9188 1.406  NaN 1.3594
+##   Limo    NaN   NaN   NaN   NaN    NaN   NaN  NaN 0.7900   NaN  NaN    NaN
+##   Obme    NaN   NaN 1.025   NaN    NaN   NaN  NaN    NaN   NaN  NaN    NaN
+##   Sasa 1.1000   NaN   NaN   NaN    NaN   NaN  NaN 1.0000   NaN  NaN    NaN
+##       sppar
+## sphote  ther  tome
+##   Dian   NaN   NaN
+##   Dipu 1.954   NaN
+##   Disa   NaN   NaN
+##   Divu   NaN 1.833
+##   Limo   NaN   NaN
+##   Obme   NaN   NaN
+##   Sasa   NaN   NaN
+## 
+## , , variable = cc
+## 
+##       sppar
+## sphote   conf dipl   eleg   erge   falc   frat  furc   igno   kech morm
+##   Dian    NaN  NaN 0.8250    NaN    NaN 0.9333   NaN    NaN    NaN  NaN
+##   Dipu    NaN  NaN    NaN 1.1497    NaN    NaN   NaN 0.7165    NaN  NaN
+##   Disa 0.6713  NaN 0.9987 0.9307 0.5781    NaN 1.158 0.5483 0.7950  0.8
+##   Divu    NaN  0.7 1.0667 1.0100 0.8333    NaN   NaN 0.6050 0.7759  NaN
+##   Limo    NaN  NaN    NaN    NaN    NaN    NaN   NaN 0.4700    NaN  NaN
+##   Obme    NaN  NaN 0.7000    NaN    NaN    NaN   NaN    NaN    NaN  NaN
+##   Sasa 0.6500  NaN    NaN    NaN    NaN    NaN   NaN 0.5500    NaN  NaN
+##       sppar
+## sphote   neif  ther   tome
+##   Dian    NaN   NaN    NaN
+##   Dipu    NaN 1.135    NaN
+##   Disa 0.3750   NaN    NaN
+##   Divu 0.9788   NaN 0.9167
+##   Limo    NaN   NaN    NaN
+##   Obme    NaN   NaN    NaN
+##   Sasa    NaN   NaN    NaN
+## 
+## , , variable = lm
+## 
+##       sppar
+## sphote  conf dipl  eleg  erge  falc frat  furc  igno  kech morm   neif
+##   Dian   NaN  NaN 1.500   NaN   NaN  1.2   NaN   NaN   NaN  NaN    NaN
+##   Dipu   NaN  NaN   NaN 2.801   NaN  NaN   NaN 1.789   NaN  NaN    NaN
+##   Disa 1.173  NaN 2.007 2.667 1.562  NaN 1.987 1.692 2.080  2.2 0.5125
+##   Divu   NaN  1.2 2.205 2.520 1.340  NaN   NaN 1.601 1.789  NaN 1.9052
+##   Limo   NaN  NaN   NaN   NaN   NaN  NaN   NaN 1.545   NaN  NaN    NaN
+##   Obme   NaN  NaN 1.267   NaN   NaN  NaN   NaN   NaN   NaN  NaN    NaN
+##   Sasa 1.300  NaN   NaN   NaN   NaN  NaN   NaN 1.467   NaN  NaN    NaN
+##       sppar
+## sphote  ther  tome
+##   Dian   NaN   NaN
+##   Dipu 2.802   NaN
+##   Disa   NaN   NaN
+##   Divu   NaN 2.817
+##   Limo   NaN   NaN
+##   Obme   NaN   NaN
+##   Sasa   NaN   NaN
+## 
+## , , variable = li
+## 
+##       sppar
+## sphote  conf  dipl  eleg  erge  falc frat  furc  igno  kech morm  neif
+##   Dian   NaN   NaN 2.050   NaN   NaN  1.5   NaN   NaN   NaN  NaN   NaN
+##   Dipu   NaN   NaN   NaN 2.639   NaN  NaN   NaN 1.774   NaN  NaN   NaN
+##   Disa 1.144   NaN 2.342 2.406 1.297  NaN 2.621 1.497 1.893    2 0.800
+##   Divu   NaN 1.575 2.272 2.940 1.374  NaN   NaN 1.550 1.806  NaN 1.838
+##   Limo   NaN   NaN   NaN   NaN   NaN  NaN   NaN 1.410   NaN  NaN   NaN
+##   Obme   NaN   NaN 1.530   NaN   NaN  NaN   NaN   NaN   NaN  NaN   NaN
+##   Sasa 1.300   NaN   NaN   NaN   NaN  NaN   NaN 1.363   NaN  NaN   NaN
+##       sppar
+## sphote  ther  tome
+##   Dian   NaN   NaN
+##   Dipu 2.812   NaN
+##   Disa   NaN   NaN
+##   Divu   NaN 3.083
+##   Limo   NaN   NaN
+##   Obme   NaN   NaN
+##   Sasa   NaN   NaN
+</code></pre>
+
+<h1>Reformater les moyennes</h1>
+
+<pre><code class="r">head(melt(means, na.rm = TRUE))
+</code></pre>
+
+<pre><code>##   sphote sppar variable value
+## 1   Dian  conf        a   NaN
+## 2   Dipu  conf        a   NaN
+## 3   Disa  conf        a 1.204
+## 4   Divu  conf        a   NaN
+## 5   Limo  conf        a   NaN
+## 6   Obme  conf        a   NaN
 </code></pre>
 
 <h1>Taille d&#39;échantillon</h1>
 
-<pre><code class="r">print(xtabs(~sppar + sphote, lam))
+<pre><code class="r">cast(lam, sppar ~ sphote, length, subset = variable == &quot;a&quot;)
 </code></pre>
 
-<pre><code>##       sphote
-## sppar  Dian Dipu Disa Divu Limo Obme Sasa
-##   conf    0    0    1    0    0    0    1
-##   dipl    0    0    0    2    0    0    0
-##   eleg    2    0   35   16    0    6    0
-##   erge    0    4   13    2    0    0    0
-##   falc    0    0    2    7    0    0    0
-##   frat    6    0    0    0    0    0    0
-##   furc    0    0    7    0    0    0    0
-##   igno    0    2   18    8   10    0    5
-##   kech    0    0    7   23    0    0    0
-##   morm    0    0    1    0    0    0    0
-##   neif    0    0    5    1    0    0    0
-##   ther    0    2    0    0    0    0    0
-##   tome    0    0    0    3    0    0    0
-</code></pre>
-
-<h1>Valeur moyenne de a</h1>
-
-<pre><code class="r">agr = aggregate(lam$a, by = list(host = lam$sphote, parasite = lam$sppar), mean, 
-    na.rm = TRUE)
-print(head(agr))
-</code></pre>
-
-<pre><code>##   host parasite     x
-## 1 Disa     conf 1.204
-## 2 Sasa     conf 1.300
-## 3 Divu     dipl 1.100
-## 4 Dian     eleg 1.650
-## 5 Disa     eleg 1.740
-## 6 Divu     eleg 1.760
-</code></pre>
-
-<h1>Valeur moyenne de a</h1>
-
-<pre><code class="r">print(xtabs(round(x, 1) ~ host + parasite, agr))
-</code></pre>
-
-<pre><code>##       parasite
-## host   conf dipl eleg erge falc frat furc igno kech morm neif ther tome
-##   Dian  0.0  0.0  1.6  0.0  0.0  1.6  0.0  0.0  0.0  0.0  0.0  0.0  0.0
-##   Dipu  0.0  0.0  0.0  2.4  0.0  0.0  0.0  1.3  0.0  0.0  0.0  2.4  0.0
-##   Disa  1.2  0.0  1.7  1.9  1.4  0.0  2.0  1.2  1.8  1.6  0.9  0.0  0.0
-##   Divu  0.0  1.1  1.8  2.2  1.4  0.0  0.0  1.2  1.8  0.0  1.8  0.0  2.3
-##   Limo  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0
-##   Obme  0.0  0.0  1.4  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
-##   Sasa  1.3  0.0  0.0  0.0  0.0  0.0  0.0  1.1  0.0  0.0  0.0  0.0  0.0
+<pre><code>##    sppar Dian Dipu Disa Divu Limo Obme Sasa
+## 1   conf    0    0    1    0    0    0    1
+## 2   dipl    0    0    0    2    0    0    0
+## 3   eleg    2    0   35   16    0    6    0
+## 4   erge    0    4   12    2    0    0    0
+## 5   falc    0    0    2    7    0    0    0
+## 6   frat    6    0    0    0    0    0    0
+## 7   furc    0    0    7    0    0    0    0
+## 8   igno    0    2   17    8   10    0    4
+## 9   kech    0    0    7   23    0    0    0
+## 10  morm    0    0    1    0    0    0    0
+## 11  neif    0    0    4    1    0    0    0
+## 12  ther    0    2    0    0    0    0    0
+## 13  tome    0    0    0    3    0    0    0
 </code></pre>
 
 <h1>Stratégie d&#39;analyse</h1>
@@ -311,37 +574,16 @@ print(head(agr))
 <h1>plyr</h1>
 
 <pre><code class="r">library(plyr)
-lam = lam[, -which(colnames(lam) == &quot;para&quot;)]
-ddply(lam, c(&quot;sphote&quot;, &quot;sppar&quot;), .fun = function(x) mean(x$a, na.rm = TRUE))
+head(ddply(lam, sphote ~ sppar ~ variable, function(x) mean(x$value)))
 </code></pre>
 
-<pre><code>##    sphote sppar     V1
-## 1    Dian  eleg 1.6500
-## 2    Dian  frat 1.6333
-## 3    Dipu  erge 2.3865
-## 4    Dipu  igno 1.2776
-## 5    Dipu  ther 2.3652
-## 6    Disa  conf 1.2035
-## 7    Disa  eleg 1.7402
-## 8    Disa  erge 1.9312
-## 9    Disa  falc 1.4428
-## 10   Disa  furc 1.9684
-## 11   Disa  igno 1.1604
-## 12   Disa  kech 1.7886
-## 13   Disa  morm 1.6000
-## 14   Disa  neif 0.8625
-## 15   Divu  dipl 1.1000
-## 16   Divu  eleg 1.7600
-## 17   Divu  erge 2.1700
-## 18   Divu  falc 1.4071
-## 19   Divu  igno 1.2288
-## 20   Divu  kech 1.8109
-## 21   Divu  neif 1.8146
-## 22   Divu  tome 2.2833
-## 23   Limo  igno 1.0200
-## 24   Obme  eleg 1.3917
-## 25   Sasa  conf 1.3000
-## 26   Sasa  igno 1.1250
+<pre><code>##   sphote sppar variable    V1
+## 1   Dian  eleg        a 1.650
+## 2   Dian  eleg        b 1.450
+## 3   Dian  eleg        c 0.975
+## 4   Dian  eleg        d 0.600
+## 5   Dian  eleg        f 0.650
+## 6   Dian  eleg        g 0.300
 </code></pre>
 
 <h1>plyr</h1>
@@ -390,19 +632,19 @@ pop = data.frame(X = sample(x, n, replace = T), Y = sample(y, n, replace = T),
 </code></pre>
 
 <pre><code>##     X   Y
-## 1 0.4 0.1
-## 2 0.7 0.1
-## 3 0.8 0.1
-## 4 0.9 0.1
-## 5 0.4 0.7
-## 6 0.7 0.7
-##                                                                               x
-## 1                   -0.1094, -0.3011, -0.7162, -0.6131, 0.2569, 2.1277, -0.6447
-## 2   -0.7235, 1.5661, -1.1904, -0.2887, 0.0230, 1.5530, -0.2263, -0.9912, 0.2780
-## 3                                                       0.8103, -1.1176, 0.3073
-## 4                                                      -0.7498, 1.1354, -0.3856
-## 5 2.3171, -0.2184, -0.1075, -0.1370, -0.3094, 0.6829, -0.2745, -0.9132, -1.0399
-## 6                             -0.8440, 0.3147, -0.7723, 0.8530, 1.3999, -0.9512
+## 1 0.2 0.0
+## 2 0.4 0.0
+## 3 0.8 0.0
+## 4 0.2 0.1
+## 5 0.4 0.1
+## 6 0.8 0.1
+##                                                                                                                                      x
+## 1 1.56513, -0.41750, -0.89211, -0.68817, 0.48053, 0.95529, -0.97648, 0.46416, -0.95464, -0.74699, 0.07977, 2.09612, -0.00347, -0.96164
+## 2                                                                                                     -0.1425, 0.4654, 1.0028, -1.3257
+## 3                                                                                            -0.4968, 0.5929, 1.3724, -0.2654, -1.2032
+## 4                                         -0.6254, 0.0538, -0.8456, 0.4390, -0.8641, -0.7842, 1.3166, -0.6331, 1.9383, -0.8477, 0.8525
+## 5                                                                   -0.1584, 0.3677, -1.1746, 1.1112, -0.9997, 0.9526, 1.0261, -1.1249
+## 6                                                                                       -0.60425, 1.72397, -0.64577, 0.02137, -0.49531
 </code></pre>
 
 <h1>Approche plyr - scale</h1>
@@ -410,13 +652,13 @@ pop = data.frame(X = sample(x, n, replace = T), Y = sample(y, n, replace = T),
 <pre><code class="r">head(ddply(pop, .(X, Y), function(df) scale(df$N)))
 </code></pre>
 
-<pre><code>##     X   Y       1
-## 1 0.4 0.1 -0.1094
-## 2 0.4 0.1 -0.3011
-## 3 0.4 0.1 -0.7162
-## 4 0.4 0.1 -0.6131
-## 5 0.4 0.1  0.2569
-## 6 0.4 0.1  2.1277
+<pre><code>##     X Y       1
+## 1 0.2 0  1.5651
+## 2 0.2 0 -0.4175
+## 3 0.2 0 -0.8921
+## 4 0.2 0 -0.6882
+## 5 0.2 0  0.4805
+## 6 0.2 0  0.9553
 </code></pre>
 
 <h1>Approche plyr - nombre d&#39;échantillons</h1>
@@ -426,39 +668,308 @@ head(out)
 </code></pre>
 
 <pre><code>##     X   Y V1
-## 1 0.4 0.1  7
-## 2 0.4 0.7  9
-## 3 0.4 0.9  7
-## 4 0.7 0.1  9
-## 5 0.7 0.7  6
-## 6 0.7 0.9 15
+## 1 0.2 0.0 14
+## 2 0.2 0.1 11
+## 3 0.2 0.3  6
+## 4 0.2 0.7 17
+## 5 0.4 0.0  4
+## 6 0.4 0.1  8
 </code></pre>
 
 <h1>Retour aux données</h1>
 
-<pre><code class="r">a_by_h_p = ddply(lam, .(sppar, sphote), function(x) return(data.frame(a = mean(x$a))))
-head(a_by_h_p)
+<pre><code class="r">ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), 
+    n = length(value), min = min(value), max = max(value), median = median(value))
 </code></pre>
 
-<pre><code>##   sppar sphote     a
-## 1  conf   Disa 1.204
-## 2  conf   Sasa 1.300
-## 3  dipl   Divu 1.100
-## 4  eleg   Dian 1.650
-## 5  eleg   Disa 1.740
-## 6  eleg   Divu 1.760
+<pre><code>##     sphote sppar variable   mean      sd  n    min    max median
+## 1     Dian  eleg        a 1.6500 0.14142  2 1.5500 1.7500 1.6500
+## 2     Dian  eleg        b 1.4500 0.07071  2 1.4000 1.5000 1.4500
+## 3     Dian  eleg        c 0.9750 0.10607  2 0.9000 1.0500 0.9750
+## 4     Dian  eleg        d 0.6000 0.07071  2 0.5500 0.6500 0.6000
+## 5     Dian  eleg        f 0.6500 0.07071  2 0.6000 0.7000 0.6500
+## 6     Dian  eleg        g 0.3000 0.00000  2 0.3000 0.3000 0.3000
+## 7     Dian  eleg       aa 1.5750 0.03536  2 1.5500 1.6000 1.5750
+## 8     Dian  eleg       bb 1.4000 0.00000  2 1.4000 1.4000 1.4000
+## 9     Dian  eleg       cc 0.8250 0.10607  2 0.7500 0.9000 0.8250
+## 10    Dian  eleg       lm 1.5000 0.42426  2 1.2000 1.8000 1.5000
+## 11    Dian  eleg       li 2.0500 0.21213  2 1.9000 2.2000 2.0500
+## 12    Dian  frat        a 1.6333 0.05164  6 1.6000 1.7000 1.6000
+## 13    Dian  frat        b 1.4667 0.10328  6 1.3000 1.6000 1.5000
+## 14    Dian  frat        c 1.0333 0.12111  6 0.9000 1.2000 1.0500
+## 15    Dian  frat        d 0.4833 0.11690  6 0.3000 0.6500 0.4750
+## 16    Dian  frat        f 0.6083 0.10206  6 0.5000 0.7500 0.6000
+## 17    Dian  frat        g 0.2917 0.05845  6 0.2500 0.4000 0.2750
+## 18    Dian  frat       aa 1.3333 0.08756  6 1.2500 1.5000 1.3000
+## 19    Dian  frat       bb 1.1583 0.23752  6 0.7000 1.4000 1.2000
+## 20    Dian  frat       cc 0.9333 0.08756  6 0.8000 1.0500 0.9250
+## 21    Dian  frat       lm 1.2000 0.29665  6 0.8000 1.7000 1.1500
+## 22    Dian  frat       li 1.5000 0.20000  6 1.2000 1.7000 1.5000
+## 23    Dipu  erge        a 2.3865 0.06632  4 2.3227 2.4631 2.3800
+## 24    Dipu  erge        b 2.3142 0.05540  4 2.2426 2.3666 2.3238
+## 25    Dipu  erge        c 1.6667 0.11365  4 1.5488 1.7773 1.6702
+## 26    Dipu  erge        d 0.8382 0.09432  4 0.7230 0.9420 0.8440
+## 27    Dipu  erge        f 1.1478 0.14474  4 0.9523 1.3013 1.1688
+## 28    Dipu  erge        g 0.5814 0.05394  4 0.5390 0.6523 0.5672
+## 29    Dipu  erge       aa 1.9896 0.18428  4 1.7204 2.1384 2.0498
+## 30    Dipu  erge       bb 1.8985 0.21375  4 1.5915 2.0791 1.9618
+## 31    Dipu  erge       cc 1.1497 0.05319  4 1.0991 1.2159 1.1418
+## 32    Dipu  erge       lm 2.8011 0.21681  4 2.4925 2.9913 2.8604
+## 33    Dipu  erge       li 2.6393 0.09871  4 2.5035 2.7293 2.6622
+## 34    Dipu  igno        a 1.2776 0.03099  2 1.2557 1.2995 1.2776
+## 35    Dipu  igno        b 1.2736 0.05915  2 1.2318 1.3155 1.2736
+## 36    Dipu  igno        c 0.8402 0.07917  2 0.7842 0.8962 0.8402
+## 37    Dipu  igno        d 0.6224 0.12635  2 0.5330 0.7117 0.6224
+## 38    Dipu  igno        f 0.6856 0.07106  2 0.6354 0.7359 0.6856
+## 39    Dipu  igno        g 0.3492 0.02378  2 0.3324 0.3660 0.3492
+## 40    Dipu  igno       aa 1.1818 0.03779  2 1.1551 1.2085 1.1818
+## 41    Dipu  igno       bb 1.1463 0.03283  2 1.1231 1.1695 1.1463
+## 42    Dipu  igno       cc 0.7165 0.05139  2 0.6801 0.7528 0.7165
+## 43    Dipu  igno       lm 1.7888 0.09472  2 1.7218 1.8557 1.7888
+## 44    Dipu  igno       li 1.7742 0.11591  2 1.6922 1.8562 1.7742
+## 45    Dipu  ther        a 2.3652 0.04362  2 2.3344 2.3961 2.3652
+## 46    Dipu  ther        b 2.2182 0.12896  2 2.1270 2.3094 2.2182
+## 47    Dipu  ther        c 1.5876 0.10768  2 1.5115 1.6637 1.5876
+## 48    Dipu  ther        d 0.8393 0.03900  2 0.8117 0.8668 0.8393
+## 49    Dipu  ther        f 1.0874 0.08959  2 1.0240 1.1507 1.0874
+## 50    Dipu  ther        g 0.5883 0.01671  2 0.5765 0.6001 0.5883
+## 51    Dipu  ther       aa 1.9996 0.10629  2 1.9245 2.0748 1.9996
+## 52    Dipu  ther       bb 1.9543 0.09822  2 1.8849 2.0238 1.9543
+## 53    Dipu  ther       cc 1.1350 0.02980  2 1.1139 1.1561 1.1350
+## 54    Dipu  ther       lm 2.8016 0.06902  2 2.7528 2.8504 2.8016
+## 55    Dipu  ther       li 2.8119 0.04996  2 2.7766 2.8473 2.8119
+## 56    Disa  conf        a 1.2035      NA  1 1.2035 1.2035 1.2035
+## 57    Disa  conf        b 1.2436      NA  1 1.2436 1.2436 1.2436
+## 58    Disa  conf        c 0.7498      NA  1 0.7498 0.7498 0.7498
+## 59    Disa  conf        d 0.7443      NA  1 0.7443 0.7443 0.7443
+## 60    Disa  conf        f 0.6972      NA  1 0.6972 0.6972 0.6972
+## 61    Disa  conf        g 0.3702      NA  1 0.3702 0.3702 0.3702
+## 62    Disa  conf       aa 0.9759      NA  1 0.9759 0.9759 0.9759
+## 63    Disa  conf       bb 0.9007      NA  1 0.9007 0.9007 0.9007
+## 64    Disa  conf       cc 0.6713      NA  1 0.6713 0.6713 0.6713
+## 65    Disa  conf       lm 1.1728      NA  1 1.1728 1.1728 1.1728
+## 66    Disa  conf       li 1.1440      NA  1 1.1440 1.1440 1.1440
+## 67    Disa  eleg        a 1.7402 0.31848 35 1.3000 2.4500 1.7716
+## 68    Disa  eleg        b 1.6621 0.33940 35 1.2000 2.3500 1.7324
+## 69    Disa  eleg        c 1.1857 0.26628 35 0.8000 1.8200 1.2000
+## 70    Disa  eleg        d 0.5340 0.13952 35 0.3000 0.7686 0.5200
+## 71    Disa  eleg        f 0.6263 0.16198 35 0.4000 0.9542 0.6000
+## 72    Disa  eleg        g 0.3587 0.08950 34 0.2000 0.5394 0.3401
+## 73    Disa  eleg       aa 1.5289 0.28876 35 1.1000 2.0300 1.5000
+## 74    Disa  eleg       bb 1.4760 0.31354 35 1.0000 2.0800 1.5000
+## 75    Disa  eleg       cc 0.9987 0.18560 35 0.7000 1.3486 1.0000
+## 76    Disa  eleg       lm 2.0067 0.37158 34 1.4600 2.6100 2.0799
+## 77    Disa  eleg       li 2.3420 0.59459 35 1.5000 3.6000 2.3031
+## 78    Disa  erge        a 1.9312 0.35794 12 1.2000 2.3500 2.0276
+## 79    Disa  erge        b 1.8283 0.38234 12 1.0000 2.2400 1.9166
+## 80    Disa  erge        c 1.2777 0.32909 12 0.6500 1.8800 1.2818
+## 81    Disa  erge        d 0.6802 0.17764 12 0.3500 0.9084 0.7420
+## 82    Disa  erge        f 0.9088 0.22231 12 0.3500 1.1400 0.9868
+## 83    Disa  erge        g 0.4777 0.09884 12 0.3000 0.6200 0.4671
+## 84    Disa  erge       aa 1.6516 0.28155 13 1.0000 2.0144 1.6700
+## 85    Disa  erge       bb 1.5806 0.32939 13 0.8000 1.9258 1.6700
+## 86    Disa  erge       cc 0.9307 0.20277 13 0.4000 1.1595 0.9888
+## 87    Disa  erge       lm 2.6667 0.53157 13 1.3000 3.3900 2.7781
+## 88    Disa  erge       li 2.4055 0.46826 13 1.4000 3.0300 2.4053
+## 89    Disa  falc        a 1.4428 0.50516  2 1.0856 1.8000 1.4428
+## 90    Disa  falc        b 0.9940 0.13288  2 0.9000 1.0879 0.9940
+## 91    Disa  falc        c 0.5997 0.14105  2 0.5000 0.6995 0.5997
+## 92    Disa  falc        d 0.4850 0.12015  2 0.4000 0.5699 0.4850
+## 93    Disa  falc        f 0.4599 0.08465  2 0.4000 0.5197 0.4599
+## 94    Disa  falc        g 0.2461 0.06523  2 0.2000 0.2923 0.2461
+## 95    Disa  falc       aa 0.9029 0.07485  2 0.8500 0.9559 0.9029
+## 96    Disa  falc       bb 0.8876 0.19459  2 0.7500 1.0252 0.8876
+## 97    Disa  falc       cc 0.5781 0.11039  2 0.5000 0.6561 0.5781
+## 98    Disa  falc       lm 1.5615 0.05440  2 1.5231 1.6000 1.5615
+## 99    Disa  falc       li 1.2975 0.27929  2 1.1000 1.4950 1.2975
+## 100   Disa  furc        a 1.9684 0.09914  7 1.8128 2.1000 2.0000
+## 101   Disa  furc        b 1.8575 0.08338  7 1.6910 1.9387 1.8500
+## 102   Disa  furc        c 1.3522 0.10327  7 1.2403 1.5000 1.3047
+## 103   Disa  furc        d 0.6287 0.06921  7 0.5200 0.7219 0.6000
+## 104   Disa  furc        f 0.7512 0.04317  7 0.7000 0.8022 0.7500
+## 105   Disa  furc        g 0.4145 0.08908  7 0.3000 0.5374 0.4000
+## 106   Disa  furc       aa 1.7694 0.10440  7 1.5785 1.8800 1.8000
+## 107   Disa  furc       bb 1.6700 0.10225  7 1.4765 1.7700 1.7000
+## 108   Disa  furc       cc 1.1579 0.09091  7 0.9888 1.2685 1.2000
+## 109   Disa  furc       lm 1.9873 0.22851  7 1.6926 2.3500 1.9500
+## 110   Disa  furc       li 2.6212 0.20412  7 2.1869 2.8000 2.6803
+## 111   Disa  igno        a 1.1604 0.30233 17 0.7000 1.6700 1.0400
+## 112   Disa  igno        b 1.1171 0.31170 16 0.6000 1.6100 1.0400
+## 113   Disa  igno        c 0.7640 0.20751 15 0.4000 1.0400 0.7800
+## 114   Disa  igno        d 0.4677 0.15562 15 0.2000 0.7185 0.5000
+## 115   Disa  igno        f 0.5664 0.21032 15 0.2500 0.8800 0.5200
+## 116   Disa  igno        g 0.2548 0.09291 15 0.1500 0.4166 0.2600
+## 117   Disa  igno       aa 1.0110 0.24333 17 0.6500 1.3500 1.0000
+## 118   Disa  igno       bb 0.9432 0.26129 16 0.5000 1.3000 0.9650
+## 119   Disa  igno       cc 0.5483 0.12650 16 0.3000 0.7300 0.5700
+## 120   Disa  igno       lm 1.6923 0.58503 18 0.8000 2.9700 1.5600
+## 121   Disa  igno       li 1.4970 0.47339 18 0.8000 2.4000 1.3750
+## 122   Disa  kech        a 1.7886 0.53890  7 0.8000 2.1400 2.0800
+## 123   Disa  kech        b 1.8333 0.31443  6 1.2000 2.0300 1.9550
+## 124   Disa  kech        c 1.2050 0.23484  6 0.7300 1.3500 1.3000
+## 125   Disa  kech        d 0.6117 0.10797  6 0.4100 0.7300 0.6200
+## 126   Disa  kech        f 1.0317 0.26634  6 0.5200 1.2500 1.1150
+## 127   Disa  kech        g 0.4483 0.13318  6 0.2000 0.5700 0.4950
+## 128   Disa  kech       aa 1.4686 0.49664  7 0.5000 1.8200 1.6700
+## 129   Disa  kech       bb 1.5183 0.24604  6 1.0400 1.7200 1.5850
+## 130   Disa  kech       cc 0.7950 0.09138  6 0.6200 0.8800 0.8300
+## 131   Disa  kech       lm 2.0800 0.70228  7 0.8000 2.7100 2.2400
+## 132   Disa  kech       li 1.8929 0.54301  7 0.9000 2.4000 1.9800
+## 133   Disa  morm        a 1.6000      NA  1 1.6000 1.6000 1.6000
+## 134   Disa  morm        b 1.5500      NA  1 1.5500 1.5500 1.5500
+## 135   Disa  morm        c 1.2500      NA  1 1.2500 1.2500 1.2500
+## 136   Disa  morm        d 0.7000      NA  1 0.7000 0.7000 0.7000
+## 137   Disa  morm        f 0.8000      NA  1 0.8000 0.8000 0.8000
+## 138   Disa  morm        g 0.6500      NA  1 0.6500 0.6500 0.6500
+## 139   Disa  morm       aa 1.4000      NA  1 1.4000 1.4000 1.4000
+## 140   Disa  morm       bb 1.3000      NA  1 1.3000 1.3000 1.3000
+## 141   Disa  morm       cc 0.8000      NA  1 0.8000 0.8000 0.8000
+## 142   Disa  morm       lm 2.2000      NA  1 2.2000 2.2000 2.2000
+## 143   Disa  morm       li 2.0000      NA  1 2.0000 2.0000 2.0000
+## 144   Disa  neif        a 0.8625 0.04787  4 0.8000 0.9000 0.8750
+## 145   Disa  neif        b 0.7500 0.05774  4 0.7000 0.8000 0.7500
+## 146   Disa  neif        c 0.4500 0.07071  4 0.3500 0.5000 0.4750
+## 147   Disa  neif        d 0.3250 0.06455  4 0.2500 0.4000 0.3250
+## 148   Disa  neif        f 0.3500 0.04082  4 0.3000 0.4000 0.3500
+## 149   Disa  neif        g 0.2000 0.04082  4 0.1500 0.2500 0.2000
+## 150   Disa  neif       aa 0.7500 0.04082  4 0.7000 0.8000 0.7500
+## 151   Disa  neif       bb 0.6625 0.04787  4 0.6000 0.7000 0.6750
+## 152   Disa  neif       cc 0.3750 0.06455  4 0.3000 0.4500 0.3750
+## 153   Disa  neif       lm 0.5125 0.16520  4 0.3000 0.7000 0.5250
+## 154   Disa  neif       li 0.8000 0.20412  4 0.6500 1.1000 0.7250
+## 155   Divu  dipl        a 1.1000 0.14142  2 1.0000 1.2000 1.1000
+## 156   Divu  dipl        b 1.0250 0.17678  2 0.9000 1.1500 1.0250
+## 157   Divu  dipl        c 0.5250 0.10607  2 0.4500 0.6000 0.5250
+## 158   Divu  dipl        d 0.4500 0.07071  2 0.4000 0.5000 0.4500
+## 159   Divu  dipl        f 0.4750 0.03536  2 0.4500 0.5000 0.4750
+## 160   Divu  dipl        g 0.2250 0.03536  2 0.2000 0.2500 0.2250
+## 161   Divu  dipl       aa 1.2000 0.42426  2 0.9000 1.5000 1.2000
+## 162   Divu  dipl       bb 1.0750 0.31820  2 0.8500 1.3000 1.0750
+## 163   Divu  dipl       cc 0.7000 0.28284  2 0.5000 0.9000 0.7000
+## 164   Divu  dipl       lm 1.2000 0.14142  2 1.1000 1.3000 1.2000
+## 165   Divu  dipl       li 1.5750 0.38891  2 1.3000 1.8500 1.5750
+## 166   Divu  eleg        a 1.7600 0.14394 16 1.5000 2.0600 1.7250
+## 167   Divu  eleg        b 1.6373 0.16594 15 1.3000 1.9300 1.6500
+## 168   Divu  eleg        c 1.2436 0.10172 14 1.1000 1.5100 1.2250
+## 169   Divu  eleg        d 0.5113 0.09812 15 0.3100 0.7000 0.5000
+## 170   Divu  eleg        f 0.5687 0.08814 15 0.3600 0.7500 0.5500
+## 171   Divu  eleg        g 0.3307 0.05824 15 0.2000 0.4000 0.3500
+## 172   Divu  eleg       aa 1.6381 0.12346 16 1.4000 1.9300 1.6250
+## 173   Divu  eleg       bb 1.5027 0.17576 15 1.0000 1.8100 1.5000
+## 174   Divu  eleg       cc 1.0667 0.15060 15 0.9000 1.5000 1.0000
+## 175   Divu  eleg       lm 2.2046 1.02134 13 1.2000 5.4300 1.9000
+## 176   Divu  eleg       li 2.2723 0.25862 13 1.7700 2.6600 2.3000
+## 177   Divu  erge        a 2.1700 0.09899  2 2.1000 2.2400 2.1700
+## 178   Divu  erge        b 2.0450 0.27577  2 1.8500 2.2400 2.0450
+## 179   Divu  erge        c 1.1750 0.60104  2 0.7500 1.6000 1.1750
+## 180   Divu  erge        d 0.9250 0.17678  2 0.8000 1.0500 0.9250
+## 181   Divu  erge        f 0.9000 0.14142  2 0.8000 1.0000 0.9000
+## 182   Divu  erge        g 0.6650 0.30406  2 0.4500 0.8800 0.6650
+## 183   Divu  erge       aa 1.7800 0.02828  2 1.7600 1.8000 1.7800
+## 184   Divu  erge       bb 1.8350 0.12021  2 1.7500 1.9200 1.8350
+## 185   Divu  erge       cc 1.0100 0.15556  2 0.9000 1.1200 1.0100
+## 186   Divu  erge       lm 2.5200 0.73539  2 2.0000 3.0400 2.5200
+## 187   Divu  erge       li 2.9400 0.08485  2 2.8800 3.0000 2.9400
+## 188   Divu  falc        a 1.4071 0.69770  7 0.9500 2.8400 1.0900
+## 189   Divu  falc        b 1.3700 0.72680  6 0.9000 2.7100 0.9950
+## 190   Divu  falc        c 0.7040 0.31477  5 0.4500 1.2500 0.6200
+## 191   Divu  falc        d 0.5080 0.06611  5 0.4000 0.5700 0.5200
+## 192   Divu  falc        f 0.4483 0.10420  6 0.3500 0.6200 0.4350
+## 193   Divu  falc        g 0.2740 0.02881  5 0.2500 0.3100 0.2600
+## 194   Divu  falc       aa 1.2829 0.62284  7 0.9000 2.5800 0.9500
+## 195   Divu  falc       bb 1.2167 0.68608  6 0.5000 2.4500 0.9950
+## 196   Divu  falc       cc 0.8333 0.41244  6 0.3600 1.5500 0.7500
+## 197   Divu  falc       lm 1.3400 0.51400  5 0.6200 1.9800 1.4000
+## 198   Divu  falc       li 1.3740 0.29653  5 0.9500 1.7700 1.4000
+## 199   Divu  igno        a 1.2288 0.19313  8 1.0000 1.5000 1.2000
+## 200   Divu  igno        b 1.1557 0.18946  7 0.9000 1.3500 1.2000
+## 201   Divu  igno        c 0.7486 0.12321  7 0.6000 0.9400 0.8000
+## 202   Divu  igno        d 0.4943 0.15296  7 0.3000 0.6500 0.6000
+## 203   Divu  igno        f 0.5443 0.19764  7 0.3000 0.8500 0.6000
+## 204   Divu  igno        g 0.3086 0.08859  7 0.2000 0.4500 0.3000
+## 205   Divu  igno       aa 1.0137 0.23784  8 0.4700 1.2000 1.0700
+## 206   Divu  igno       bb 0.9188 0.24982  8 0.3600 1.1000 0.9950
+## 207   Divu  igno       cc 0.6050 0.08159  8 0.5000 0.7500 0.5850
+## 208   Divu  igno       lm 1.6013 0.45593  8 1.0000 2.1500 1.5550
+## 209   Divu  igno       li 1.5500 0.27568  6 1.2000 1.8000 1.6750
+## 210   Divu  kech        a 1.8109 0.16946 23 1.4000 2.0300 1.8000
+## 211   Divu  kech        b 1.7077 0.16923 22 1.4000 1.9300 1.7600
+## 212   Divu  kech        c 1.0921 0.25174 19 0.7000 1.5600 1.1000
+## 213   Divu  kech        d 0.5706 0.12473 18 0.3100 0.8000 0.6000
+## 214   Divu  kech        f 0.8145 0.14719 22 0.5000 1.0400 0.8650
+## 215   Divu  kech        g 0.3847 0.12782 17 0.2500 0.7300 0.3600
+## 216   Divu  kech       aa 1.5722 0.16268 23 1.1000 1.8000 1.5600
+## 217   Divu  kech       bb 1.4064 0.24383 22 0.7000 1.7000 1.4600
+## 218   Divu  kech       cc 0.7759 0.23734 22 0.3100 1.4000 0.7300
+## 219   Divu  kech       lm 1.7886 0.34878 22 0.6200 2.1400 1.8550
+## 220   Divu  kech       li 1.8059 0.22549 22 1.3500 2.1900 1.8000
+## 221   Divu  neif        a 1.8146      NA  1 1.8146 1.8146 1.8146
+## 222   Divu  neif        b 1.7175      NA  1 1.7175 1.7175 1.7175
+## 223   Divu  neif        c 1.2890      NA  1 1.2890 1.2890 1.2890
+## 224   Divu  neif        d 0.7173      NA  1 0.7173 0.7173 0.7173
+## 225   Divu  neif        f 0.7970      NA  1 0.7970 0.7970 0.7970
+## 226   Divu  neif        g 0.4476      NA  1 0.4476 0.4476 0.4476
+## 227   Divu  neif       aa 1.3888      NA  1 1.3888 1.3888 1.3888
+## 228   Divu  neif       bb 1.3594      NA  1 1.3594 1.3594 1.3594
+## 229   Divu  neif       cc 0.9788      NA  1 0.9788 0.9788 0.9788
+## 230   Divu  neif       lm 1.9052      NA  1 1.9052 1.9052 1.9052
+## 231   Divu  neif       li 1.8381      NA  1 1.8381 1.8381 1.8381
+## 232   Divu  tome        a 2.2833 0.12583  3 2.1500 2.4000 2.3000
+## 233   Divu  tome        b 2.1833 0.07638  3 2.1000 2.2500 2.2000
+## 234   Divu  tome        c 1.2833 0.10408  3 1.2000 1.4000 1.2500
+## 235   Divu  tome        d 0.8000 0.13229  3 0.6500 0.9000 0.8500
+## 236   Divu  tome        f 1.1500 0.08660  3 1.0500 1.2000 1.2000
+## 237   Divu  tome        g 0.3833 0.07638  3 0.3000 0.4500 0.4000
+## 238   Divu  tome       aa 1.8167 0.02887  3 1.8000 1.8500 1.8000
+## 239   Divu  tome       bb 1.8333 0.07638  3 1.7500 1.9000 1.8500
+## 240   Divu  tome       cc 0.9167 0.02887  3 0.9000 0.9500 0.9000
+## 241   Divu  tome       lm 2.8167 0.44814  3 2.3000 3.1000 3.0500
+## 242   Divu  tome       li 3.0833 0.30139  3 2.8000 3.4000 3.0500
+## 243   Limo  igno        a 1.0200 0.11106 10 0.8500 1.2000 1.0250
+## 244   Limo  igno        b 0.9100 0.10220 10 0.8000 1.1000 0.9000
+## 245   Limo  igno        c 0.5050 0.07246 10 0.3500 0.6000 0.5000
+## 246   Limo  igno        d 0.4350 0.07091 10 0.3000 0.5000 0.4500
+## 247   Limo  igno        f 0.4600 0.09944 10 0.3000 0.6000 0.4750
+## 248   Limo  igno        g 0.2400 0.05164 10 0.2000 0.3500 0.2250
+## 249   Limo  igno       aa 0.9150 0.07472 10 0.8000 1.0000 0.9000
+## 250   Limo  igno       bb 0.7900 0.07746 10 0.7000 0.9000 0.8000
+## 251   Limo  igno       cc 0.4700 0.07528 10 0.4000 0.6000 0.4500
+## 252   Limo  igno       lm 1.5450 0.19358 10 1.2500 1.9000 1.5250
+## 253   Limo  igno       li 1.4100 0.17288 10 1.2000 1.7000 1.4000
+## 254   Obme  eleg        a 1.3917 0.05845  6 1.3000 1.4500 1.4000
+## 255   Obme  eleg        b 1.2917 0.08010  6 1.2000 1.4000 1.3000
+## 256   Obme  eleg        c 0.8667 0.05164  6 0.8000 0.9000 0.9000
+## 257   Obme  eleg        d 0.4250 0.06892  6 0.3000 0.5000 0.4500
+## 258   Obme  eleg        f 0.4667 0.06055  6 0.4000 0.5500 0.4750
+## 259   Obme  eleg        g 0.3417 0.06646  6 0.2500 0.4500 0.3500
+## 260   Obme  eleg       aa 1.1833 0.09309  6 1.0500 1.3000 1.2000
+## 261   Obme  eleg       bb 1.0250 0.08216  6 0.9000 1.1000 1.0500
+## 262   Obme  eleg       cc 0.7000 0.05477  6 0.6500 0.8000 0.7000
+## 263   Obme  eleg       lm 1.2667 0.25033  6 0.9000 1.6000 1.3000
+## 264   Obme  eleg       li 1.5300 0.17176  5 1.2500 1.7000 1.6000
+## 265   Sasa  conf        a 1.3000      NA  1 1.3000 1.3000 1.3000
+## 266   Sasa  conf        b 1.2500      NA  1 1.2500 1.2500 1.2500
+## 267   Sasa  conf        c 0.5500      NA  1 0.5500 0.5500 0.5500
+## 268   Sasa  conf        d 0.3000      NA  1 0.3000 0.3000 0.3000
+## 269   Sasa  conf        f 0.3500      NA  1 0.3500 0.3500 0.3500
+## 270   Sasa  conf        g 0.2000      NA  1 0.2000 0.2000 0.2000
+## 271   Sasa  conf       aa 1.2000      NA  1 1.2000 1.2000 1.2000
+## 272   Sasa  conf       bb 1.1000      NA  1 1.1000 1.1000 1.1000
+## 273   Sasa  conf       cc 0.6500      NA  1 0.6500 0.6500 0.6500
+## 274   Sasa  conf       lm 1.3000      NA  1 1.3000 1.3000 1.3000
+## 275   Sasa  conf       li 1.3000      NA  1 1.3000 1.3000 1.3000
+## 276   Sasa  igno        a 1.1250 0.10408  4 1.0000 1.2500 1.1250
+## 277   Sasa  igno        b 1.0125 0.13150  4 0.9000 1.2000 0.9750
+## 278   Sasa  igno        c 0.6625 0.04787  4 0.6000 0.7000 0.6750
+## 279   Sasa  igno        d 0.4000 0.09129  4 0.3000 0.5000 0.4000
+## 280   Sasa  igno        f 0.4125 0.13150  4 0.3000 0.5500 0.4000
+## 281   Sasa  igno        g 0.2125 0.02500  4 0.2000 0.2500 0.2000
+## 282   Sasa  igno       aa 1.0625 0.09465  4 1.0000 1.2000 1.0250
+## 283   Sasa  igno       bb 1.0000 0.07071  4 0.9500 1.1000 0.9750
+## 284   Sasa  igno       cc 0.5500 0.10801  4 0.4500 0.7000 0.5250
+## 285   Sasa  igno       lm 1.4667 0.11547  3 1.4000 1.6000 1.4000
+## 286   Sasa  igno       li 1.3625 0.13769  4 1.2000 1.5000 1.3750
 </code></pre>
-
-<h1>GGplot2</h1>
-
-<pre><code class="r">library(ggplot2)
-ggplot(lam, aes(x = sppar, fill = sphote, y = a)) + geom_boxplot()
-</code></pre>
-
-<pre><code>## Warning: Removed 4 rows containing non-finite values (stat_boxplot).
-</code></pre>
-
-<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-11"/> </p>
 
 </body>
 
