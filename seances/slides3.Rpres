@@ -16,12 +16,29 @@ Objectifs de la séance
 3. Les *packages* `plyr` et `reshape`
 4. Les graphiques avec `ggplot2`
 
+Les données "complexes"
+=====
+
+1. De grande taille (*relativement aux statistiques classiques*)
+2. Multi-factorielles
+3. Incomplètes
+
+Fonctions de base dans R
+=====
+
+- `lapply`, `tapply`, `aggregate`, `sapply`, ...
+- **Problème**: Pas de consistence dans
+   1. les noms
+   2. le comportement
+   3. les entrées / sorties
+
 Un exemple
 =======
 
-- 147 individus de différentes espèces de parasites, sur différents hôtes
+- 147 individus de différentes espèces de parasites de poissons, sur différents hôtes
 - une dizaine de mesures morphométriques
 - certaines données sont manquantes
+- toutes les combinaisons de facteurs n'ont pas le même nombre d'observations
 
 Pour récupérer les données: `http://dx.doi.org/10.6084/m9.figshare.97320`
 
@@ -39,7 +56,6 @@ Lecture des données
 ======
 
 ```{r}
-library(RCurl)
 lam = read.table('http://files.figshare.com/143154/lamellodiscus.txt',sep='\t',h=TRUE,dec='.')
 head(lam)
 ```
@@ -53,27 +69,19 @@ lam = melt(lam, na.rm=TRUE)
 head(lam)
 ```
 
-Calculer les moyennes
-=====
-
-```{r}
-means = dcast(lam, sphote~sppar~variable, mean, na.rm=TRUE)
-means
-```
-
-Reformater les moyennes
-=====
-
-```{r}
-head(melt(means, na.rm=TRUE))
-```
-
 Taille d'échantillon
 =====
 
 ```{r}
-dcast(lam, sppar ~ sphote, length, subset=variable=='a')
+acast(lam, sppar ~ sphote ~ variable, length)
 ```
+
+Limitation
+=====
+
+> If the combination of variables you supply does not uniquely identify one row in the original data set, you will need to supply an aggregating function, fun.aggregate. This function should take a vector of numbers and return a single summary statistic.
+
+**Solution**: la librairie `plyr`
 
 Stratégie d'analyse
 =====
@@ -81,6 +89,8 @@ Stratégie d'analyse
 1. `split`: diviser les données en ensembles (*pieces*) sur lesquels on travaille
 2. `apply`: appliquer la fonction de traitement à chaque *piece*
 3. `combine`: "re-coller" les objets dans un objet final
+
+Une adresse: [http://plyr.had.co.nz/](http://plyr.had.co.nz/)
 
 Fonction de traitement
 =====
@@ -94,14 +104,6 @@ Fonction de traitement
 plyr
 ======
 
-```{r}
-library(plyr)
-head(ddply(lam, sphote~sppar~variable, function(x) mean(x$value)))
-```
-
-plyr
-======
-
 Nommage des fonctions de `plyr`: `**ply()`
 
 - `d`: `data.frame`
@@ -110,6 +112,14 @@ Nommage des fonctions de `plyr`: `**ply()`
 - `_`: *discard* (only for the second letter)
 
 **Exemple:** `dlply` prend un `data.frame` en entrée, renvoie une `list`
+
+plyr
+======
+
+```{r}
+library(plyr)
+head(ddply(lam, sphote~sppar~variable, function(x) mean(x$value)))
+```
 
 Une note importante
 ======
@@ -141,7 +151,7 @@ pop = data.frame(
 )
 ```
 
-On veut standardiser (`scale`) les données *par site*.
+On veut standardiser (`scale`) les données *par site*, pour avoir des données de moyenne 0, d'écart-type 1.
 
 Approche R "classique"
 ======
@@ -169,9 +179,23 @@ Retour aux données
 ======
 
 ```{r}
-head(ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), n = length(value), min = min(value), max = max(value), median = median(value)))
+all_means = ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), n = length(value))
+head(all_means)
 ```
 
+Utilisation de subset
+=====
+
+```{r}
+all_eleg = ddply(subset(lam, sppar=='eleg'), sphote ~ variable, summarize, mean = round(mean(value), 2), sd = round(sd(value), 2), n = length(value))
+head(all_eleg)
+```
+Remettre les données en forme
+=====
+
+```{r}
+dcast(all_eleg, sphote ~ variable, value.var = "mean")
+```
 Synthèse
 =====
 
@@ -198,6 +222,26 @@ Principe de ggplot2
 2. Esthétiques
 3. Visualisation
 
+**Étape obligée:** [http://docs.ggplot2.org/current/](http://docs.ggplot2.org/current/)
+
 Exemple
 =====
 
+```{r}
+ggplot(subset(lam, lam$sppar=='eleg'), aes(x=variable, y=value, fill=sphote)) + geom_boxplot()
+```
+
+Exemple
+=====
+
+```{r}
+ggplot(droplevels(subset(lam, lam$variable=='a')), aes(x=value, fill=sphote)) + geom_density(alpha=0.5) + facet_wrap(~sppar)
+```
+
+Exemple
+=====
+
+```{r}
+wvar = dcast(lam, sppar * sphote * para ~ variable, value.var = c("value"), mean)
+ggplot(wvar, aes(x=a, y=d, colour=sppar)) + geom_point() + facet_wrap(~sphote)
+```
