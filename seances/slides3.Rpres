@@ -175,12 +175,45 @@ out = ddply(pop, .(X, Y), function(df) length(df$N))
 head(out)
 ```
 
+Approche plyr - syntaxe simplifiée
+======
+
+```{r}
+out = ddply(pop, Y~X, nrow)
+head(out)
+```
+
+Approche plyr - vers une matrice
+======
+
+```{r}
+out = daply(pop, Y~X, nrow)
+out
+```
+
+Approche plyr - vers une liste
+======
+
+```{r}
+out = dlply(pop, Y~X, nrow)
+head(out)
+```
+
 Retour aux données
 ======
 
 ```{r}
 all_means = ddply(lam, sphote ~ sppar ~ variable, summarize, mean = mean(value), sd = sd(value), n = length(value))
 head(all_means)
+```
+
+La foncton summarize
+=====
+
+La fonction `summarize` permet de résumer et de donner des noms aux statistiques:
+
+```
+summarize, mean_X = mean(X), mean_Y = mean(Y), sample_X = nrow(X)
 ```
 
 Utilisation de subset
