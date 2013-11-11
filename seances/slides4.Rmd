@@ -1,0 +1,126 @@
+Analyses reproductibles
+=====
+author: Tim Poisot
+
+Obectifs de la séance
+=====
+
+1. programmer pour les autres
+2. faire des analyses reproductibles
+
+Le problème
+=====
+
+> Programming today is a race between software engineers striving to build
+bigger and better idiot-proof programs, and the Universe trying to produce
+bigger and better idiots.  So far, the Universe is winning. (*Rich Cook*)
+
+Solution
+=====
+
+Écrire des programmes qui **vérifient les arguments**
+
+Exemple
+=====
+
+```{r}
+somme = function(a, b) return(a+b)
+```
+
+Qu'est-ce qui peut mal se passer?
+
+Exemple
+=====
+
+1. arguments par défaut
+2. vérifier les arguments donnés par l'utilisateur
+
+Exemple
+=====
+
+```{r}
+somme2 = function(a=0, b=0)
+{
+   if (!is.numeric(a))  stop("The first argument should be numeric")
+   if (!is.numeric(b))  stop("The second argument should be numeric")
+   return(a+b)
+}
+```
+
+Exemple
+=====
+
+```{r, eval=FALSE}
+somme2()
+somme2(b=2)
+somme2('2', 3)
+```
+
+Renvoyer des messages
+=====
+
+```{r, eval = FALSE}
+warning("Ceci est un avertissement")
+stop("Ceci est une erreur dans une fonction")
+```
+
+En bref
+=====
+
+> A good programmer is someone who always looks both ways before crossing
+a one-way street. (*Doug Linder*)
+
+Tester pour les conditions connues
+=====
+
+*Rappel séance 1*: un bon algorithme est prévisible dans son comportement.
+
+Si on donne des arguments pour lesquels on *connaît* la sortie, alors on peut déterminer si la fonction est correcte.
+
+Exemple
+=====
+
+On écrit une fonction qui donne le mauvais résultat
+
+```{r}
+moyenne = function(x)
+{
+   number = 1
+   total  = 0
+   for(i in c(1:length(x)))
+   {
+      number = number + 1
+      total  = total + x[i]
+   }
+   return(total/number)
+}
+```
+
+Exemple
+=====
+
+On peut **tester** que cette fonction est correcte:
+
+```{r}
+moyenne(c(2,4)) == 3
+moyenne(c(1,2,3)) == 2
+```
+
+**Exercice supplémentaire**: faire en sorte que `moyenne` vérifie que les arguments en entrée soient les bons.
+
+Approche
+=====
+
+1. spécifier ce que la fonction *doit* faire
+2. penser aux situations dans lesquelles ça ne fonctionne pas
+3. expliciter **quoi faire** dans ces situations
+4. vérifier le comportement de la fonction dans des cas **connus**
+
+Certaines approches demandent de faire ce travail **avant** d'écrire la
+fonction (*Test-driven development*)
+
+Le mot de la fin
+=====
+
+> Always code as if the guy who ends up maintaining your code will be a
+violent psychopath who knows where you live. (*Martin Golding*)
