@@ -131,12 +131,20 @@ moyenne(c(1,2,3)) == 2
 
 **Exercice supplémentaire**: faire en sorte que `moyenne` vérifie que les arguments en entrée soient les bons.
 
+Tests unitaires
+=====
+
+- dans `R`, la librairie `Runit` permet d'automatister les tests
+- dans d'autres langages (*e.g.* `python`) on parle de **tests unitaires**
+- dans un projet "complexe", *chaque fonction* doit avoir été testée: c'est la **garantie que le programme est utilisable**
+
 Approche
 =====
 
 1. spécifier ce que la fonction *doit* faire
 2. penser aux situations dans lesquelles ça ne fonctionne pas
 3. expliciter **quoi faire** dans ces situations
+   - éventuellement proposer des corrections automatiques
 4. vérifier le comportement de la fonction dans des cas **connus**
 
 Certaines approches demandent de faire ce travail **avant** d'écrire la
@@ -147,3 +155,101 @@ Le mot de la fin
 
 > Always code as if the guy who ends up maintaining your code will be a
 violent psychopath who knows where you live. (*Martin Golding*)
+
+R + markdown
+=====
+
+**Problème**: Les analyses demandent du contexte
+
+**Solution**: Écrire des documents *dynamiques*
+
+**Exemple**: L'ensemble des diapos de cette formation...
+
+R + markdown
+=====
+
+
+```r
+library(knitr)
+```
+
+
+*Note*: toutes ces étapes peuvent se faire en dehors de `RStudio` *via* la commande `Rscript`
+
+markdown?
+=====
+
+`markdown` est un langage de marquage *minimaliste*
+
+```{markdown}
+`markdown` est un langage de marquage *minimaliste*
+```
+
+markdown?
+=====
+
+`markdown` se convertit vers à peu près tous les autres types de format (`doc`, `odt`, `tex`, `html`, `rst`, `pdf`)
+
+Dans `RStudio`: `Help` > `Mardown quick reference`
+
+Pourquoi R-markdown?
+=====
+
+Comparer
+
+```{markdown}
+On a effectué des mesures sur 132 individus, la taille moyenne est 23.4 cm.
+```
+
+et
+
+```{markdown, eval=FALSE}
+On a effectué des mesures sur ` r length(mes)` individus, la taille moyenne est ` r mean(mes)` cm.
+```
+
+On peut mettre a jour le document **de manière dynamique**
+
+Quelques liens
+=====
+
+1. [Pandoc] and [knitr]
+2. [How to ditch word]
+3. [R and my divorce from word]
+4. [Markdown for scientific writing]
+5. [What is scholarly markdown]
+
+[knitr]: http://yihui.name/knitr/
+[How to ditch word]: http://inundata.org/2012/12/04/how-to-ditch-word/
+[Pandoc]: http://johnmacfarlane.net/pandoc/
+[R and my divorce from word]: http://mbjoseph.github.io/blog/2013/10/30/word/
+[Markdown for scientific writing]: https://github.com/karthik/markdown_science
+[What is scholarly markdown]: http://blog.martinfenner.org/2013/06/17/what-is-scholarly-markdown/
+
+Les avantages
+=====
+
+1. Votre travail est **reproductible**: le document est généré à partir des données
+1. Texte seulement: pas de problèmes de versions
+2. Prix total: 0$ (+Tx)
+3. Facile d'exporter votre document vers différents formats
+
+Exemple
+=====
+
+
+```r
+library(knitr)
+library(reshape2)
+library(plyr)
+data(iris)
+d = melt(iris)
+kable(acast(ddply(d, Species~variable, summarize, Moyenne=round(mean(value),2)), variable~Species))
+```
+
+|id            |  setosa|  versicolor|  virginica|
+|:-------------|-------:|-----------:|----------:|
+|Sepal.Length  |    5.01|        5.94|       6.59|
+|Sepal.Width   |    3.43|        2.77|       2.97|
+|Petal.Length  |    1.46|        4.26|       5.55|
+|Petal.Width   |    0.25|        1.33|       2.03|
+
